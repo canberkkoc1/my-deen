@@ -33,6 +33,13 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(MyDeen) to use your location.",
+          "locationWhenInUsePermission": "Allow $(MyDeen) to use your location."
+        }
       ]
     ],
     "experiments": {

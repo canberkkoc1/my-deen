@@ -1,0 +1,43 @@
+{
+    "common": {
+        "settings": "Ayarlar",
+        "version": "Versiyon"
+    },
+    "prayerTimes": {
+        "title": "Namaz Vakitleri",
+        "calculationMethod": "Hesaplama Metodu",
+        "calculationMethodDesc": "Namaz vakitlerinin hesaplanma yöntemini seçin",
+        "use24Hour": "24 Saat Formatı",
+        "use24HourDesc": "Vakitleri 24 saat formatında göster"
+    },
+    "notifications": {
+        "title": "Bildirimler",
+        "prayerTimeNotifications": "Namaz Vakti Bildirimleri",
+        "prayerTimeNotificationsDesc": "Her namaz vakti için bildirim al",
+        "notificationSound": "Bildirim Sesi",
+        "notificationSoundDesc": "Bildirimler için ses çal"
+    },
+    "appearance": {
+        "title": "Görünüm",
+        "darkTheme": "Koyu Tema",
+        "darkThemeDesc": "Uygulamayı koyu temada kullan"
+    },
+    "language": {
+        "title": "Dil",
+        "select": "Dil Seçimi",
+        "selectDesc": "Uygulama dilini değiştir"
+    },
+    "location": {
+        "permissionTitle": "Konum İzni",
+        "permissionMessage": "Namaz vakitlerini konumunuza göre gösterebilmek için konum iznine ihtiyacımız var. Lütfen sistem ayarlarından konum iznini etkinleştirin.",
+        "goToSettings": "Ayarlara Git",
+        "cancel": "Vazgeç",
+        "usingMecca": "Konum izni vermediğiniz için namaz vakitleri Mekke'ye göre ayarlanmıştır.",
+        "ok": "Tamam"
+    },
+    "qibla": {
+        "title": "Kıble Pusulası",
+        "calibrate": "Kalibre Et",
+        "accuracy": "Hassasiyet"
+    }
+}

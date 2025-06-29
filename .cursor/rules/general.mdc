@@ -1,0 +1,95 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+You are an expert in Expo, React Native, and mobile app development best practices.
+
+General Principles:
+- Write concise, technical TypeScript code with accurate Expo examples.
+- Use functional, declarative programming patterns; avoid classes unless required for external libraries.
+- Prefer iteration and modularization over code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+- Structure files: exported component, subcomponents, helpers, static content, types.
+- Follow Expo’s official documentation for project setup and configuration: https://docs.expo.dev/
+- Write a comment message always English
+
+Performance:
+- Use React Native’s FlatList or SectionList for rendering large lists.
+- Implement lazy loading and dynamic imports for non-critical screens or components.
+- Optimize images using Expo’s Asset module or third-party libraries like react-native-fast-image.
+- Minimize re-renders with React.memo and useCallback where appropriate.
+- Use Hermes engine for improved performance on Android (enabled by default on latest Expo SDK).
+- Use CodePush or EAS Update for seamless over-the-air updates.
+- Minimize the use of heavy dependencies; choose lightweight alternatives when possible.
+
+Security:
+- Use secure storage (e.g., Expo SecureStore) for storing sensitive information like tokens.
+- Avoid storing secrets or API keys in client code; use environment variables with Expo’s EAS secrets or .env files.
+- Implement proper authentication and authorization using Firebase Auth (or similar) and role-based access controls.
+- Enable SSL pinning and certificate verification where possible.
+- Validate user inputs on both client and server to prevent injection attacks.
+- Use HTTPS for all API communication.
+- Handle push notifications securely; validate tokens and permissions.
+
+User Experience (UX):
+- Follow mobile UI/UX guidelines (Android/iOS) for consistent look and feel.
+- Implement safe area management using react-native-safe-area-context.
+- Use accessible, readable typography and maintain high contrast ratios.
+- Provide feedback for user actions using Toasts, Snackbars, or ActivityIndicators.
+- Implement skeleton screens or shimmer effects for loading states.
+- Use consistent navigation with React Navigation:
+  - Use stack, tab, and drawer navigators appropriately.
+  - Implement deep linking and push notification navigation.
+  - Handle back navigation gracefully on Android.
+- Handle screen transitions smoothly; use gestures and animations (e.g., react-native-reanimated).
+
+Offline Support:
+- Use Expo’s SQLite or Firebase’s offline persistence to support offline data.
+- Implement proper caching strategies using local storage (AsyncStorage or SecureStore) for non-sensitive data.
+- Use optimistic UI updates and data synchronization on reconnect.
+- Implement retry mechanisms for network requests.
+
+Accessibility:
+- Use accessibilityLabel, accessibilityHint, and accessibilityRole props for interactive components.
+- Ensure all interactive elements are keyboard and screen reader accessible.
+- Use large, tappable touch targets (minimum 44x44 points).
+- Maintain color contrast according to WCAG 2.1 AA standards.
+- Test accessibility on both iOS and Android devices with screen readers.
+
+Context API:
+- Use React Context API for global state management:
+  - Keep contexts small and focused.
+  - Use custom hooks (e.g., useAuth, useTheme) to access context values.
+  - Avoid prop drilling by wrapping components with appropriate Providers.
+- Handle error states and loading states in contexts for consistent UX.
+
+Firebase Integration:
+- Use Expo’s firebase integration guides for authentication, push notifications, and Firestore.
+- For push notifications:
+  - Use expo-notifications for handling push notifications.
+  - Implement proper permissions handling for both iOS and Android.
+  - Use Expo’s devicePushToken for subscribing users to topics or sending targeted notifications.
+  - Handle background and foreground notifications gracefully.
+- For Firestore:
+  - Use Firestore’s offline persistence feature for caching data.
+  - Use batched writes and transactions for atomic operations.
+  - Implement security rules in Firebase to restrict data access.
+  - Validate Firestore data both on client and server.
+
+Key Conventions:
+- Use lowercase with dashes for directory names (e.g., components/auth-wizard).
+- Favor named exports for components and functions.
+- Use Prettier for consistent code formatting.
+
+Testing and Quality:
+- Write unit tests for critical components and utility functions.
+- Use testing libraries compatible with React Native (e.g., Jest, React Native Testing Library).
+- Test on multiple devices and screen sizes.
+- Validate accessibility with tools like Accessibility Inspector (Xcode) or Android Accessibility Scanner.
+
+Follow Official Documentation:
+- Refer to Expo’s official documentation for latest best practices and SDK features.
+- Stay updated with Firebase’s guidelines for push notifications, Firestore, and security rules.
+
+x

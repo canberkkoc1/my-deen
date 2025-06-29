@@ -1,0 +1,43 @@
+{
+    "common": {
+        "settings": "Settings",
+        "version": "Version"
+    },
+    "prayerTimes": {
+        "title": "Prayer Times",
+        "calculationMethod": "Calculation Method",
+        "calculationMethodDesc": "Select the method for calculating prayer times",
+        "use24Hour": "24 Hour Format",
+        "use24HourDesc": "Display times in 24-hour format"
+    },
+    "notifications": {
+        "title": "Notifications",
+        "prayerTimeNotifications": "Prayer Time Notifications",
+        "prayerTimeNotificationsDesc": "Receive notifications for each prayer time",
+        "notificationSound": "Notification Sound",
+        "notificationSoundDesc": "Play sound for notifications"
+    },
+    "appearance": {
+        "title": "Appearance",
+        "darkTheme": "Dark Theme",
+        "darkThemeDesc": "Use dark theme in the app"
+    },
+    "language": {
+        "title": "Language",
+        "select": "Select Language",
+        "selectDesc": "Change application language"
+    },
+    "location": {
+        "permissionTitle": "Location Permission",
+        "permissionMessage": "We need location permission to show prayer times for your location. Please enable location permission in system settings.",
+        "goToSettings": "Go to Settings",
+        "cancel": "Cancel",
+        "usingMecca": "Prayer times are set to Mecca's schedule because location permission was not granted.",
+        "ok": "OK"
+    },
+    "qibla": {
+        "title": "Qibla Compass",
+        "calibrate": "Calibrate",
+        "accuracy": "Accuracy"
+    }
+}
