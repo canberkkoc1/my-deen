@@ -1,14 +1,32 @@
 {
     "common": {
         "settings": "Settings",
-        "version": "Version"
+        "version": "Version",
+        "prayerTimes": "Prayer Times",
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "retry": "Retry",
+        "ok": "OK",
+        "cancel": "Cancel"
     },
     "prayerTimes": {
         "title": "Prayer Times",
         "calculationMethod": "Calculation Method",
         "calculationMethodDesc": "Select the method for calculating prayer times",
         "use24Hour": "24 Hour Format",
-        "use24HourDesc": "Display times in 24-hour format"
+        "use24HourDesc": "Display times in 24-hour format",
+        "loading": "Loading prayer times...",
+        "nextPrayer": "Next Prayer",
+        "remaining": "remaining",
+        "methodInfo": "Calculation Method: {{method}}",
+        "prayers": {
+            "fajr": "Fajr",
+            "sunrise": "Sunrise",
+            "dhuhr": "Dhuhr",
+            "asr": "Asr",
+            "maghrib": "Maghrib",
+            "isha": "Isha"
+        }
     },
     "notifications": {
         "title": "Notifications",
@@ -20,7 +38,12 @@
     "appearance": {
         "title": "Appearance",
         "darkTheme": "Dark Theme",
-        "darkThemeDesc": "Use dark theme in the app"
+        "darkThemeDesc": "Use dark theme in the app",
+        "theme": "Theme",
+        "themeDesc": "Select application theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
     },
     "language": {
         "title": "Language",
@@ -38,6 +61,27 @@
     "qibla": {
         "title": "Qibla Compass",
         "calibrate": "Calibrate",
-        "accuracy": "Accuracy"
+        "accuracy": "Accuracy",
+        "accuracyHigh": "High",
+        "accuracyMedium": "Medium",
+        "accuracyLow": "Low",
+        "accuracyUnreliable": "Unreliable",
+        "direction": "Qibla Direction",
+        "calibrating": "Calibrating...",
+        "noPermission": "Location permission required",
+        "noPermissionDesc": "Location permission is required to calculate Qibla direction",
+        "loading": "Getting location information...",
+        "distance": "Distance",
+        "bearing": "Bearing",
+        "deviceHeading": "Device Heading",
+        "qiblaHeading": "Qibla Heading",
+        "debug": "Debug",
+        "compassUnavailable": "Compass not available",
+        "compassUnavailableDesc": "Compass feature is not supported on this device",
+        "instructions": "Hold your phone flat and follow the Qibla direction"
+    },
+    "app": {
+        "title": "App Information",
+        "version": "Version"
     }
 }

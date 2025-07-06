@@ -1,0 +1,87 @@
+{
+    "common": {
+        "settings": "الإعدادات",
+        "version": "الإصدار",
+        "prayerTimes": "أوقات الصلاة",
+        "loading": "جاري التحميل...",
+        "error": "حدث خطأ",
+        "retry": "إعادة المحاولة",
+        "ok": "موافق",
+        "cancel": "إلغاء"
+    },
+    "prayerTimes": {
+        "title": "أوقات الصلاة",
+        "calculationMethod": "طريقة الحساب",
+        "calculationMethodDesc": "اختر طريقة حساب أوقات الصلاة",
+        "use24Hour": "نظام 24 ساعة",
+        "use24HourDesc": "عرض الأوقات بنظام 24 ساعة",
+        "loading": "جاري تحميل أوقات الصلاة...",
+        "nextPrayer": "الصلاة التالية",
+        "remaining": "متبقي",
+        "methodInfo": "طريقة الحساب: {{method}}",
+        "prayers": {
+            "fajr": "الفجر",
+            "sunrise": "الشروق",
+            "dhuhr": "الظهر",
+            "asr": "العصر",
+            "maghrib": "المغرب",
+            "isha": "العشاء"
+        }
+    },
+    "notifications": {
+        "title": "الإشعارات",
+        "prayerTimeNotifications": "إشعارات أوقات الصلاة",
+        "prayerTimeNotificationsDesc": "استلام إشعارات لكل وقت صلاة",
+        "notificationSound": "صوت الإشعار",
+        "notificationSoundDesc": "تشغيل الصوت للإشعارات"
+    },
+    "appearance": {
+        "title": "المظهر",
+        "darkTheme": "المظهر الداكن",
+        "darkThemeDesc": "استخدام المظهر الداكن في التطبيق",
+        "theme": "المظهر",
+        "themeDesc": "اختر مظهر التطبيق",
+        "light": "فاتح",
+        "dark": "داكن",
+        "system": "النظام"
+    },
+    "language": {
+        "title": "اللغة",
+        "select": "اختيار اللغة",
+        "selectDesc": "تغيير لغة التطبيق"
+    },
+    "location": {
+        "permissionTitle": "إذن الموقع",
+        "permissionMessage": "نحتاج إلى إذن الموقع لعرض أوقات الصلاة حسب موقعك. يرجى تفعيل إذن الموقع في إعدادات النظام.",
+        "goToSettings": "الذهاب إلى الإعدادات",
+        "cancel": "إلغاء",
+        "usingMecca": "تم تعيين أوقات الصلاة حسب توقيت مكة المكرمة لأنه لم يتم منح إذن الموقع.",
+        "ok": "موافق"
+    },
+    "qibla": {
+        "title": "بوصلة القبلة",
+        "calibrate": "معايرة",
+        "accuracy": "الدقة",
+        "accuracyHigh": "عالية",
+        "accuracyMedium": "متوسطة",
+        "accuracyLow": "منخفضة",
+        "accuracyUnreliable": "غير موثوقة",
+        "direction": "اتجاه القبلة",
+        "calibrating": "جاري المعايرة...",
+        "noPermission": "مطلوب إذن الموقع",
+        "noPermissionDesc": "مطلوب إذن الموقع لحساب اتجاه القبلة",
+        "loading": "جاري الحصول على معلومات الموقع...",
+        "distance": "المسافة",
+        "bearing": "الاتجاه",
+        "deviceHeading": "اتجاه الجهاز",
+        "qiblaHeading": "اتجاه القبلة",
+        "debug": "تصحيح الأخطاء",
+        "compassUnavailable": "البوصلة غير متاحة",
+        "compassUnavailableDesc": "ميزة البوصلة غير مدعومة في هذا الجهاز",
+        "instructions": "أمسك هاتفك بشكل مسطح واتبع اتجاه القبلة"
+    },
+    "app": {
+        "title": "معلومات التطبيق",
+        "version": "الإصدار"
+    }
+}

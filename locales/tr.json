@@ -1,14 +1,32 @@
 {
     "common": {
         "settings": "Ayarlar",
-        "version": "Versiyon"
+        "version": "Versiyon",
+        "prayerTimes": "Namaz Vakitleri",
+        "loading": "Yükleniyor...",
+        "error": "Hata oluştu",
+        "retry": "Tekrar Dene",
+        "ok": "Tamam",
+        "cancel": "İptal"
     },
     "prayerTimes": {
         "title": "Namaz Vakitleri",
         "calculationMethod": "Hesaplama Metodu",
         "calculationMethodDesc": "Namaz vakitlerinin hesaplanma yöntemini seçin",
         "use24Hour": "24 Saat Formatı",
-        "use24HourDesc": "Vakitleri 24 saat formatında göster"
+        "use24HourDesc": "Vakitleri 24 saat formatında göster",
+        "loading": "Namaz vakitleri yükleniyor...",
+        "nextPrayer": "Sonraki Namaz",
+        "remaining": "kaldı",
+        "methodInfo": "Hesaplama Yöntemi: {{method}}",
+        "prayers": {
+            "fajr": "İmsak",
+            "sunrise": "Güneş",
+            "dhuhr": "Öğle",
+            "asr": "İkindi",
+            "maghrib": "Akşam",
+            "isha": "Yatsı"
+        }
     },
     "notifications": {
         "title": "Bildirimler",
@@ -20,7 +38,12 @@
     "appearance": {
         "title": "Görünüm",
         "darkTheme": "Koyu Tema",
-        "darkThemeDesc": "Uygulamayı koyu temada kullan"
+        "darkThemeDesc": "Uygulamayı koyu temada kullan",
+        "theme": "Tema",
+        "themeDesc": "Uygulama temasını seçin",
+        "light": "Açık",
+        "dark": "Koyu",
+        "system": "Sistem"
     },
     "language": {
         "title": "Dil",
@@ -38,6 +61,27 @@
     "qibla": {
         "title": "Kıble Pusulası",
         "calibrate": "Kalibre Et",
-        "accuracy": "Hassasiyet"
+        "accuracy": "Hassasiyet",
+        "accuracyHigh": "Yüksek",
+        "accuracyMedium": "Orta",
+        "accuracyLow": "Düşük",
+        "accuracyUnreliable": "Güvenilmez",
+        "direction": "Kıble Yönü",
+        "calibrating": "Kalibre ediliyor...",
+        "noPermission": "Konum izni gerekli",
+        "noPermissionDesc": "Kıble yönünü hesaplamak için konum izni gerekli",
+        "loading": "Konum bilgisi alınıyor...",
+        "distance": "Mesafe",
+        "bearing": "Açı",
+        "deviceHeading": "Cihaz Yönü",
+        "qiblaHeading": "Kıble Yönü",
+        "debug": "Hata Ayıklama",
+        "compassUnavailable": "Pusula mevcut değil",
+        "compassUnavailableDesc": "Bu cihazda pusula özelliği desteklenmiyor",
+        "instructions": "Telefonunuzu düz tutun ve kıble yönünü takip edin"
+    },
+    "app": {
+        "title": "Uygulama Bilgileri",
+        "version": "Versiyon"
     }
 }
