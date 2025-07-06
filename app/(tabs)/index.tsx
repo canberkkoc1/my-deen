@@ -16,12 +16,12 @@ export default function PrayerTimesScreen() {
     const timeUntilNext = getTimeUntilNext();
 
     const prayerList = prayerTimes ? [
-        { name: 'İmsak', time: prayerTimes.fajr, icon: 'weather-night' },
-        { name: 'Güneş', time: prayerTimes.sunrise, icon: 'weather-sunset-up' },
-        { name: 'Öğle', time: prayerTimes.dhuhr, icon: 'weather-sunny' },
-        { name: 'İkindi', time: prayerTimes.asr, icon: 'weather-sunset' },
-        { name: 'Akşam', time: prayerTimes.maghrib, icon: 'weather-sunset-down' },
-        { name: 'Yatsı', time: prayerTimes.isha, icon: 'weather-night' },
+        { name: t('prayerTimes.prayers.fajr'), time: prayerTimes.fajr, icon: 'weather-night' },
+        { name: t('prayerTimes.prayers.sunrise'), time: prayerTimes.sunrise, icon: 'weather-sunset-up' },
+        { name: t('prayerTimes.prayers.dhuhr'), time: prayerTimes.dhuhr, icon: 'weather-sunny' },
+        { name: t('prayerTimes.prayers.asr'), time: prayerTimes.asr, icon: 'weather-sunset' },
+        { name: t('prayerTimes.prayers.maghrib'), time: prayerTimes.maghrib, icon: 'weather-sunset-down' },
+        { name: t('prayerTimes.prayers.isha'), time: prayerTimes.isha, icon: 'weather-night' },
     ] : [];
 
     const getCurrentPrayerStatus = (prayerName: string) => {
@@ -111,7 +111,7 @@ export default function PrayerTimesScreen() {
                 {loading && !prayerTimes && (
                     <View style={styles.loadingContainer}>
                         <ActivityIndicator size="large" color={colors.primary} />
-                        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Namaz vakitleri yükleniyor...</Text>
+                        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>{t('prayerTimes.loading')}</Text>
                     </View>
                 )}
 
@@ -126,11 +126,11 @@ export default function PrayerTimesScreen() {
 
                             {nextPrayer && (
                                 <View style={[styles.nextPrayerContainer, { borderTopColor: colors.border }]}>
-                                    <Text style={[styles.nextPrayerLabel, { color: colors.textMuted }]}>Sonraki Namaz</Text>
+                                    <Text style={[styles.nextPrayerLabel, { color: colors.textMuted }]}>{t('prayerTimes.nextPrayer')}</Text>
                                     <Text style={[styles.nextPrayerNameHeader, { color: colors.nextPrayer }]}>{nextPrayer.name}</Text>
                                     <Text style={[styles.nextPrayerTime, { color: colors.textPrimary }]}>{nextPrayer.time}</Text>
                                     {timeUntilNext && (
-                                        <Text style={[styles.timeRemaining, { color: colors.textSecondary }]}>{timeUntilNext} kaldı</Text>
+                                        <Text style={[styles.timeRemaining, { color: colors.textSecondary }]}>{timeUntilNext} {t('prayerTimes.remaining')}</Text>
                                     )}
                                 </View>
                             )}
@@ -187,7 +187,7 @@ export default function PrayerTimesScreen() {
                         {/* Method Info */}
                         <View style={[styles.methodContainer, { backgroundColor: colors.surface }]}>
                             <Text style={[styles.methodText, { color: colors.textTertiary }]}>
-                                Hesaplama Yöntemi: {prayerTimes.method.name}
+                                {t('prayerTimes.methodInfo', { method: prayerTimes.method.name })}
                             </Text>
                         </View>
                     </>

@@ -82,20 +82,66 @@ export default function SettingsScreen() {
                     });
                 }
             } catch (error) {
-                console.error('Ayarlar yüklenemedi:', error);
+                console.error('Settings could not be loaded:', error);
             }
         };
         loadSettings();
     }, []);
 
-    // Update dark theme switch when theme changes
+    // Update settings when language or theme changes
     useEffect(() => {
-        setSettings(currentSettings => {
-            const newSettings = [...currentSettings];
-            newSettings[2].items[0].value = isDark;
-            return newSettings;
-        });
-    }, [isDark]);
+        setSettings([
+            {
+                title: t('prayerTimes.title'),
+                icon: 'clock-outline',
+                items: [
+                    {
+                        title: t('prayerTimes.calculationMethod'),
+                        description: t('prayerTimes.calculationMethodDesc'),
+                        type: 'select',
+                        value: settings[0]?.items[0]?.value || 13,
+                        options: CALCULATION_METHODS,
+                    },
+                    {
+                        title: t('prayerTimes.use24Hour'),
+                        description: t('prayerTimes.use24HourDesc'),
+                        type: 'switch',
+                        value: settings[0]?.items[1]?.value || true,
+                    },
+                ],
+            },
+            {
+                title: t('notifications.title'),
+                icon: 'bell-outline',
+                items: [
+                    {
+                        title: t('notifications.prayerTimeNotifications'),
+                        description: t('notifications.prayerTimeNotificationsDesc'),
+                        type: 'switch',
+                        value: settings[1]?.items[0]?.value || false,
+                    },
+                    {
+                        title: t('notifications.notificationSound'),
+                        description: t('notifications.notificationSoundDesc'),
+                        type: 'switch',
+                        value: settings[1]?.items[1]?.value || true,
+                    },
+                ],
+            },
+            {
+                title: t('appearance.title'),
+                icon: 'palette-outline',
+                items: [
+                    {
+                        title: t('appearance.darkTheme'),
+                        description: t('appearance.darkThemeDesc'),
+                        type: 'switch',
+                        value: isDark,
+                    },
+                ],
+            },
+        ]);
+    }, [i18n.language, isDark, t]);
 
     const handleSettingChange = async (sectionIndex: number, itemIndex: number, newValue: boolean | number) => {
         const newSettings = [...settings];
@@ -109,7 +155,7 @@ export default function SettingsScreen() {
                 // Namaz vakitlerini yenile
                 await refreshPrayerTimes();
             } catch (error) {
-                console.error('Hesaplama metodu kaydedilemedi:', error);
+                console.error('Calculation method could not be saved:', error);
             }
             setModalVisible(false);
         }
@@ -137,7 +183,7 @@ export default function SettingsScreen() {
             <View style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}>
                 <View style={[styles.modalContent, { backgroundColor: colors.sectionBackground }]}>
                     <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
-                        <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Hesaplama Metodu Seçin</Text>
+                        <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>{t('prayerTimes.selectCalculationMethod')}</Text>
                         <TouchableOpacity
                             onPress={() => setModalVisible(false)}
                             style={styles.closeButton}
@@ -220,7 +266,7 @@ export default function SettingsScreen() {
                                 />
                             </View>
                             <View style={styles.methodInfo}>
-                                <Text style={[styles.methodName, { color: colors.textPrimary }]}>Türkçe</Text>
+                                <Text style={[styles.methodName, { color: colors.textPrimary }]}>{t('language.turkish')}</Text>
                             </View>
                             {i18n.language === 'tr' && (
                                 <MaterialCommunityIcons
@@ -248,9 +294,37 @@ export default function SettingsScreen() {
                                 />
                             </View>
                             <View style={styles.methodInfo}>
-                                <Text style={[styles.methodName, { color: colors.textPrimary }]}>English</Text>
+                                <Text style={[styles.methodName, { color: colors.textPrimary }]}>{t('language.english')}</Text>
                             </View>
                             {i18n.language === 'en' && (
+                                <MaterialCommunityIcons
+                                    name="check-circle"
+                                    size={24}
+                                    color={colors.primary}
+                                    style={styles.checkIcon}
+                                />
+                            )}
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.methodItem,
+                                { backgroundColor: colors.surface },
+                                i18n.language === 'ar' && { borderColor: colors.primary },
+                            ]}
+                            onPress={() => handleLanguageChange('ar')}
+                        >
+                            <View style={[styles.methodIcon, { backgroundColor: colors.background }]}>
+                                <MaterialCommunityIcons
+                                    name="translate"
+                                    size={28}
+                                    color={i18n.language === 'ar' ? colors.primary : colors.textMuted}
+                                />
+                            </View>
+                            <View style={styles.methodInfo}>
+                                <Text style={[styles.methodName, { color: colors.textPrimary }]}>{t('language.arabic')}</Text>
+                            </View>
+                            {i18n.language === 'ar' && (
                                 <MaterialCommunityIcons
                                     name="check-circle"
                                     size={24}
@@ -353,7 +427,7 @@ export default function SettingsScreen() {
                             </View>
                             <View style={styles.methodSelector}>
                                 <Text style={[styles.selectedMethod, { color: colors.primary }]}>
-                                    {i18n.language === 'tr' ? 'Türkçe' : 'English'}
+                                    {i18n.language === 'tr' ? t('language.turkish') : i18n.language === 'ar' ? t('language.arabic') : t('language.english')}
                                 </Text>
                                 <MaterialCommunityIcons
                                     name="chevron-right"

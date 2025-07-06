@@ -2,6 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Location from 'expo-location';
 import { Stack } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, Animated, Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Defs, Line, Path, RadialGradient, Stop, Text as SvgText } from 'react-native-svg';
@@ -14,6 +15,7 @@ const { width, height } = Dimensions.get('window');
 const COMPASS_SIZE = Math.min(width, height) * 0.85;
 
 export default function QiblaScreen() {
+    const { t } = useTranslation();
     const { latitude, longitude, loading, error } = useLocation();
     const { colors, isDark } = useTheme();
 
@@ -120,7 +122,7 @@ export default function QiblaScreen() {
                 // Request permissions
                 const { status } = await Location.requestForegroundPermissionsAsync();
                 if (status !== 'granted') {
-                    Alert.alert('İzin Gerekli', 'Pusula çalışması için konum izni gereklidir.');
+                    Alert.alert(t('qibla.noPermission'), t('qibla.noPermissionDesc'));
                     return;
                 }
 
@@ -149,7 +151,7 @@ export default function QiblaScreen() {
             } catch (error) {
                 console.error('Compass initialization error:', error);
                 setAccuracy('unreliable');
-                Alert.alert('Hata', 'Pusula başlatılamadı. Cihazınızın pusula sensörü çalışmıyor olabilir.');
+                Alert.alert(t('qibla.compassUnavailable'), t('qibla.compassUnavailableDesc'));
             }
         };
 
@@ -227,27 +229,27 @@ export default function QiblaScreen() {
     // Get accuracy information
     const getAccuracyInfo = () => {
         switch (accuracy) {
-            case 'high': return { text: "Yüksek Doğruluk", color: colors.success, emoji: "🎯" };
-            case 'medium': return { text: "Orta Doğruluk", color: colors.warning, emoji: "📍" };
-            case 'low': return { text: "Düşük Doğruluk", color: colors.error, emoji: "⚠️" };
-            default: return { text: "Kalibre Ediliyor", color: colors.textMuted, emoji: "🔄" };
+            case 'high': return { text: t('qibla.accuracyHigh'), color: colors.success, emoji: "🎯" };
+            case 'medium': return { text: t('qibla.accuracyMedium'), color: colors.warning, emoji: "📍" };
+            case 'low': return { text: t('qibla.accuracyLow'), color: colors.error, emoji: "⚠️" };
+            default: return { text: t('qibla.accuracyUnreliable'), color: colors.textMuted, emoji: "🔄" };
         }
     };
 
     // Get status message
     const getStatusMessage = () => {
-        if (!isCalibrated) return 'Pusula Kalibre Ediliyor...';
-        if (angleDifference < 3) return '🎯 Mükemmel! Kıble Yönü Bulundu';
-        if (angleDifference < 8) return '✅ Çok İyi! Kıbleye Çok Yakın';
-        if (angleDifference < 20) return '🔄 İyi! Kıbleye Yaklaşıyorsunuz';
-        return '🧭 Kıble Yönünü Bulmak İçin Dönün';
+        if (!isCalibrated) return t('qibla.calibrating');
+        if (angleDifference < 3) return t('qibla.statusPerfect');
+        if (angleDifference < 8) return t('qibla.statusExcellent');
+        if (angleDifference < 20) return t('qibla.statusGood');
+        return t('qibla.statusSearching');
     };
 
     const accuracyInfo = getAccuracyInfo();
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: themeColors.gradientColors[0] }]}>
-            <Stack.Screen options={{ title: 'Kıble', headerShown: false }} />
+            <Stack.Screen options={{ title: t('navigation.qibla'), headerShown: false }} />
 
             {/* Background */}
             <LinearGradient
@@ -259,9 +261,9 @@ export default function QiblaScreen() {
             {/* Header */}
             <View style={styles.header}>
                 <View>
-                    <Text style={[styles.title, { color: themeColors.primaryText }]}>Kıble Pusulası</Text>
+                    <Text style={[styles.title, { color: themeColors.primaryText }]}>{t('qibla.title')}</Text>
                     <Text style={[styles.subtitle, { color: themeColors.secondaryText }]}>
-                        {latitude && longitude ? `${latitude.toFixed(2)}, ${longitude.toFixed(2)}` : 'Konum Alınıyor...'}
+                        {latitude && longitude ? `${latitude.toFixed(2)}, ${longitude.toFixed(2)}` : t('qibla.loading')}
                     </Text>
                 </View>
                 <Animated.View
@@ -427,7 +429,7 @@ export default function QiblaScreen() {
                     borderColor: themeColors.compassBorder
                 }]}>
                     <Text style={[styles.qiblaAngle, { color: themeColors.qiblaArrow }]}>{Math.round(qiblaDirection)}°</Text>
-                    <Text style={[styles.qiblaLabel, { color: themeColors.secondaryText }]}>Kıble</Text>
+                    <Text style={[styles.qiblaLabel, { color: themeColors.secondaryText }]}>{t('qibla.qiblaLabel')}</Text>
                     <Text style={[styles.deviceAngle, { color: themeColors.primaryText }]}>{Math.round(deviceHeading)}°</Text>
                 </View>
             </View>
@@ -440,7 +442,7 @@ export default function QiblaScreen() {
                 }]}>
                     <Text style={[styles.statusTitle, { color: themeColors.primaryText }]}>{getStatusMessage()}</Text>
                     <Text style={[styles.statusSubtitle, { color: themeColors.secondaryText }]}>
-                        Cihaz yönünden {angleDifference.toFixed(1)}° fark var
+                        {t('qibla.angleDifference', { difference: angleDifference.toFixed(1) })}
                     </Text>
                 </View>
 
@@ -449,14 +451,14 @@ export default function QiblaScreen() {
                         backgroundColor: themeColors.cardBg,
                         borderColor: themeColors.cardBorder
                     }]}>
-                        <Text style={[styles.infoLabel, { color: themeColors.secondaryText }]}>Mesafe</Text>
+                        <Text style={[styles.infoLabel, { color: themeColors.secondaryText }]}>{t('qibla.distance')}</Text>
                         <Text style={[styles.infoValue, { color: themeColors.primaryText }]}>{Math.round(distanceToKaaba)} km</Text>
                     </View>
                     <View style={[styles.infoCard, {
                         backgroundColor: themeColors.cardBg,
                         borderColor: themeColors.cardBorder
                     }]}>
-                        <Text style={[styles.infoLabel, { color: themeColors.secondaryText }]}>Doğruluk</Text>
+                        <Text style={[styles.infoLabel, { color: themeColors.secondaryText }]}>{t('qibla.accuracy')}</Text>
                         <Text style={[styles.infoValue, { color: accuracyInfo.color }]}>
                             {accuracyInfo.text.split(' ')[0]}
                         </Text>
@@ -467,10 +469,10 @@ export default function QiblaScreen() {
             {/* Debug Info (Development only) */}
             {__DEV__ && (
                 <View style={[styles.debugPanel, { backgroundColor: colors.overlay }]}>
-                    <Text style={[styles.debugTitle, { color: themeColors.primaryText }]}>Debug Bilgileri</Text>
-                    <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>Konum: {latitude?.toFixed(4)}, {longitude?.toFixed(4)}</Text>
-                    <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>Cihaz: {deviceHeading.toFixed(1)}° | Kıble: {qiblaDirection.toFixed(1)}°</Text>
-                    <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>Açı Farkı: {angleDifference.toFixed(1)}° | Doğruluk: {accuracy}</Text>
+                    <Text style={[styles.debugTitle, { color: themeColors.primaryText }]}>{t('qibla.debug')}</Text>
+                    <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>{t('qibla.location')} {latitude?.toFixed(4)}, {longitude?.toFixed(4)}</Text>
+                    <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>{t('qibla.device')} {deviceHeading.toFixed(1)}° | {t('qibla.qiblaLabel')}: {qiblaDirection.toFixed(1)}°</Text>
+                    <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>{t('qibla.angleDifference', { difference: angleDifference.toFixed(1) })} | {t('qibla.accuracy')}: {accuracy}</Text>
                 </View>
             )}
         </SafeAreaView>

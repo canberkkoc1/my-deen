@@ -1,7 +1,10 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 export default function TabLayout() {
+    const { t } = useTranslation();
+
     return (
         <Tabs
             screenOptions={{
@@ -17,7 +20,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: 'Namaz Vakitleri',
+                    title: t('navigation.prayerTimes'),
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="clock-outline" size={size} color={color} />
                     ),
@@ -27,7 +30,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="qibla"
                 options={{
-                    title: 'Kıble',
+                    title: t('navigation.qibla'),
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="compass" size={size} color={color} />
                     ),
@@ -37,7 +40,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="settings"
                 options={{
-                    title: 'Ayarlar',
+                    title: t('navigation.settings'),
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons name="cog-outline" size={size} color={color} />
                     ),
