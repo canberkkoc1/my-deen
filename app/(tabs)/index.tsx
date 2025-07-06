@@ -1,4 +1,5 @@
 import { usePrayerTimes } from '@/context/PrayerTimesContext';
+import { useTheme } from '@/context/ThemeContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import React from 'react';
@@ -9,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function PrayerTimesScreen() {
     const { t } = useTranslation();
     const { prayerTimes, loading, error, refreshPrayerTimes, getNextPrayer, getTimeUntilNext } = usePrayerTimes();
+    const { colors } = useTheme();
 
     const nextPrayer = getNextPrayer();
     const timeUntilNext = getTimeUntilNext();
@@ -43,14 +45,44 @@ export default function PrayerTimesScreen() {
         }
     };
 
+    const getStatusColors = (status: string) => {
+        switch (status) {
+            case 'next':
+                return {
+                    cardBg: colors.primary + '15', // Semi-transparent primary
+                    border: colors.primary,
+                    icon: colors.primary,
+                    text: colors.primary,
+                    time: colors.primary,
+                };
+            case 'passed':
+                return {
+                    cardBg: colors.surface,
+                    border: colors.border,
+                    icon: colors.textMuted,
+                    text: colors.textMuted,
+                    time: colors.textMuted,
+                };
+            default: // upcoming
+                return {
+                    cardBg: colors.surface,
+                    border: colors.border,
+                    icon: colors.textSecondary,
+                    text: colors.textSecondary,
+                    time: colors.textPrimary,
+                };
+        }
+    };
+
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
             <Stack.Screen
                 options={{
                     title: t('common.prayerTimes'),
                     headerStyle: {
-                        backgroundColor: '#F7F9FC',
+                        backgroundColor: colors.background,
                     },
+                    headerTintColor: colors.textPrimary,
                     headerShadowVisible: false,
                 }}
             />
@@ -61,41 +93,44 @@ export default function PrayerTimesScreen() {
                     <RefreshControl
                         refreshing={loading}
                         onRefresh={refreshPrayerTimes}
-                        colors={['#4A90E2']}
-                        tintColor="#4A90E2"
+                        colors={[colors.primary]}
+                        tintColor={colors.primary}
                     />
                 }
             >
                 {error && (
-                    <View style={styles.errorContainer}>
-                        <MaterialCommunityIcons name="alert-circle" size={24} color="#e74c3c" />
-                        <Text style={styles.errorText}>{error}</Text>
+                    <View style={[styles.errorContainer, {
+                        backgroundColor: colors.error + '15',
+                        borderColor: colors.error + '40'
+                    }]}>
+                        <MaterialCommunityIcons name="alert-circle" size={24} color={colors.error} />
+                        <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
                     </View>
                 )}
 
                 {loading && !prayerTimes && (
                     <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color="#4A90E2" />
-                        <Text style={styles.loadingText}>Namaz vakitleri yükleniyor...</Text>
+                        <ActivityIndicator size="large" color={colors.primary} />
+                        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Namaz vakitleri yükleniyor...</Text>
                     </View>
                 )}
 
                 {prayerTimes && (
                     <>
                         {/* Date and Next Prayer Info */}
-                        <View style={styles.headerCard}>
+                        <View style={[styles.headerCard, { backgroundColor: colors.surface }]}>
                             <View style={styles.dateContainer}>
-                                <Text style={styles.gregorianDate}>{prayerTimes.date}</Text>
-                                <Text style={styles.hijriDate}>{prayerTimes.hijriDate}</Text>
+                                <Text style={[styles.gregorianDate, { color: colors.textPrimary }]}>{prayerTimes.date}</Text>
+                                <Text style={[styles.hijriDate, { color: colors.textSecondary }]}>{prayerTimes.hijriDate}</Text>
                             </View>
 
                             {nextPrayer && (
-                                <View style={styles.nextPrayerContainer}>
-                                    <Text style={styles.nextPrayerLabel}>Sonraki Namaz</Text>
-                                    <Text style={styles.nextPrayerNameHeader}>{nextPrayer.name}</Text>
-                                    <Text style={styles.nextPrayerTime}>{nextPrayer.time}</Text>
+                                <View style={[styles.nextPrayerContainer, { borderTopColor: colors.border }]}>
+                                    <Text style={[styles.nextPrayerLabel, { color: colors.textMuted }]}>Sonraki Namaz</Text>
+                                    <Text style={[styles.nextPrayerNameHeader, { color: colors.nextPrayer }]}>{nextPrayer.name}</Text>
+                                    <Text style={[styles.nextPrayerTime, { color: colors.textPrimary }]}>{nextPrayer.time}</Text>
                                     {timeUntilNext && (
-                                        <Text style={styles.timeRemaining}>{timeUntilNext} kaldı</Text>
+                                        <Text style={[styles.timeRemaining, { color: colors.textSecondary }]}>{timeUntilNext} kaldı</Text>
                                     )}
                                 </View>
                             )}
@@ -105,39 +140,43 @@ export default function PrayerTimesScreen() {
                         <View style={styles.prayerTimesContainer}>
                             {prayerList.map((prayer, index) => {
                                 const status = getCurrentPrayerStatus(prayer.name);
+                                const statusColors = getStatusColors(status);
+
                                 return (
                                     <View
                                         key={prayer.name}
                                         style={[
                                             styles.prayerCard,
-                                            status === 'next' && styles.nextPrayerCard,
-                                            status === 'passed' && styles.passedPrayerCard
+                                            {
+                                                backgroundColor: statusColors.cardBg,
+                                                borderColor: statusColors.border,
+                                                borderWidth: status === 'next' ? 2 : 1,
+                                            }
                                         ]}
                                     >
                                         <View style={styles.prayerInfo}>
                                             <MaterialCommunityIcons
                                                 name={prayer.icon as any}
                                                 size={24}
-                                                color={status === 'next' ? '#4A90E2' : status === 'passed' ? '#A0AEC0' : '#2D3748'}
+                                                color={statusColors.icon}
                                             />
                                             <Text style={[
                                                 styles.prayerName,
-                                                status === 'next' && styles.nextPrayerName,
-                                                status === 'passed' && styles.passedPrayerName
+                                                { color: statusColors.text }
                                             ]}>
                                                 {prayer.name}
                                             </Text>
                                         </View>
                                         <Text style={[
                                             styles.prayerTime,
-                                            status === 'next' && styles.nextPrayerTimeText,
-                                            status === 'passed' && styles.passedPrayerTime
+                                            { color: statusColors.time },
+                                            status === 'next' && { fontSize: 18, fontWeight: 'bold' }
                                         ]}>
                                             {prayer.time}
                                         </Text>
                                         {status === 'next' && (
                                             <View style={styles.nextIndicator}>
-                                                <MaterialCommunityIcons name="chevron-right" size={20} color="#4A90E2" />
+                                                <MaterialCommunityIcons name="chevron-right" size={20} color={colors.primary} />
                                             </View>
                                         )}
                                     </View>
@@ -146,8 +185,8 @@ export default function PrayerTimesScreen() {
                         </View>
 
                         {/* Method Info */}
-                        <View style={styles.methodContainer}>
-                            <Text style={styles.methodText}>
+                        <View style={[styles.methodContainer, { backgroundColor: colors.surface }]}>
+                            <Text style={[styles.methodText, { color: colors.textTertiary }]}>
                                 Hesaplama Yöntemi: {prayerTimes.method.name}
                             </Text>
                         </View>
@@ -161,7 +200,6 @@ export default function PrayerTimesScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7F9FC',
     },
     scrollContent: {
         padding: 20,
@@ -169,16 +207,13 @@ const styles = StyleSheet.create({
     errorContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFF5F5',
         padding: 16,
         borderRadius: 12,
         marginBottom: 20,
         borderWidth: 1,
-        borderColor: '#FED7D7',
     },
     errorText: {
         marginLeft: 8,
-        color: '#e74c3c',
         fontSize: 14,
         flex: 1,
     },
@@ -188,11 +223,9 @@ const styles = StyleSheet.create({
     },
     loadingText: {
         marginTop: 12,
-        color: '#718096',
         fontSize: 16,
     },
     headerCard: {
-        backgroundColor: '#FFFFFF',
         borderRadius: 16,
         padding: 20,
         marginBottom: 20,
@@ -209,22 +242,18 @@ const styles = StyleSheet.create({
     gregorianDate: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#2D3748',
         marginBottom: 4,
     },
     hijriDate: {
         fontSize: 14,
-        color: '#718096',
     },
     nextPrayerContainer: {
         alignItems: 'center',
         paddingTop: 16,
         borderTopWidth: 1,
-        borderTopColor: '#EDF2F7',
     },
     nextPrayerLabel: {
         fontSize: 12,
-        color: '#A0AEC0',
         textTransform: 'uppercase',
         fontWeight: '600',
         marginBottom: 4,
@@ -232,18 +261,15 @@ const styles = StyleSheet.create({
     nextPrayerNameHeader: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#4A90E2',
         marginBottom: 4,
     },
     nextPrayerTime: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#2D3748',
         marginBottom: 4,
     },
     timeRemaining: {
         fontSize: 14,
-        color: '#718096',
     },
     prayerTimesContainer: {
         marginBottom: 20,
@@ -251,7 +277,6 @@ const styles = StyleSheet.create({
     prayerCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFFFFF',
         padding: 16,
         marginBottom: 8,
         borderRadius: 12,
@@ -261,14 +286,6 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 3,
     },
-    nextPrayerCard: {
-        borderWidth: 2,
-        borderColor: '#4A90E2',
-        backgroundColor: '#F7FAFF',
-    },
-    passedPrayerCard: {
-        opacity: 0.6,
-    },
     prayerInfo: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -277,32 +294,16 @@ const styles = StyleSheet.create({
     prayerName: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#2D3748',
         marginLeft: 12,
-    },
-    nextPrayerName: {
-        color: '#4A90E2',
-    },
-    passedPrayerName: {
-        color: '#A0AEC0',
     },
     prayerTime: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#4A5568',
-    },
-    nextPrayerTimeText: {
-        color: '#4A90E2',
-        fontSize: 18,
-    },
-    passedPrayerTime: {
-        color: '#A0AEC0',
     },
     nextIndicator: {
         marginLeft: 8,
     },
     methodContainer: {
-        backgroundColor: '#FFFFFF',
         borderRadius: 12,
         padding: 16,
         alignItems: 'center',
@@ -314,7 +315,6 @@ const styles = StyleSheet.create({
     },
     methodText: {
         fontSize: 12,
-        color: '#718096',
         textAlign: 'center',
     },
 }); 

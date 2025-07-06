@@ -25,7 +25,7 @@ export function PrayerTimesProvider({ children }: PrayerTimesProviderProps) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const { latitude, longitude } = useLocation();
+    const { latitude, longitude, loading: locationLoading, isUsingDefaultLocation } = useLocation();
 
     // Get calculation method from storage
     const getCalculationMethod = async (): Promise<number> => {
@@ -40,8 +40,8 @@ export function PrayerTimesProvider({ children }: PrayerTimesProviderProps) {
 
     // Fetch prayer times
     const fetchPrayerTimes = async () => {
-        if (!latitude || !longitude) {
-            debug.log('Konum bilgisi mevcut değil, namaz vakitleri alınamıyor');
+        if (!latitude || !longitude || locationLoading) {
+            debug.log('Konum bilgisi mevcut değil veya lokasyon yükleniyor, namaz vakitleri alınamıyor');
             return;
         }
 
@@ -50,7 +50,12 @@ export function PrayerTimesProvider({ children }: PrayerTimesProviderProps) {
             setError(null);
 
             const method = await getCalculationMethod();
-            debug.log('Namaz vakitleri alınıyor:', { latitude, longitude, method });
+            debug.log('Namaz vakitleri alınıyor:', {
+                latitude,
+                longitude,
+                method,
+                isUsingDefaultLocation
+            });
 
             const times = await prayerTimesApi.getTodaysPrayerTimes(latitude, longitude, method);
             setPrayerTimes(times);
@@ -84,10 +89,10 @@ export function PrayerTimesProvider({ children }: PrayerTimesProviderProps) {
 
     // Effect to fetch prayer times when location changes
     useEffect(() => {
-        if (latitude && longitude) {
+        if (latitude && longitude && !locationLoading) {
             fetchPrayerTimes();
         }
-    }, [latitude, longitude]);
+    }, [latitude, longitude, locationLoading]);
 
     // Effect to refresh prayer times at midnight
     useEffect(() => {

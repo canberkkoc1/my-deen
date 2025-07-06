@@ -8,12 +8,14 @@ import Svg, { Circle, Defs, Line, Path, RadialGradient, Stop, Text as SvgText } 
 
 import { MECCA_COORDINATES } from '@/constants';
 import { useLocation } from '@/context/LocationContext';
+import { useTheme } from '@/context/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 const COMPASS_SIZE = Math.min(width, height) * 0.85;
 
 export default function QiblaScreen() {
     const { latitude, longitude, loading, error } = useLocation();
+    const { colors, isDark } = useTheme();
 
     // State management
     const [deviceHeading, setDeviceHeading] = useState<number>(0);
@@ -26,6 +28,57 @@ export default function QiblaScreen() {
     const compassRotation = useRef(new Animated.Value(0)).current;
     const qiblaArrowRotation = useRef(new Animated.Value(0)).current;
     const pulseAnimation = useRef(new Animated.Value(1)).current;
+
+    // Get theme-aware colors
+    const getThemeColors = () => {
+        if (isDark) {
+            return {
+                gradientColors: ['#0F1419', '#1A202C', '#2D3748'] as const,
+                compassBg: '#2D3748',
+                compassBorder: '#4A5568',
+                compassCenter: 'rgba(45, 55, 72, 0.95)',
+                cardBg: 'rgba(45, 55, 72, 0.9)',
+                cardBorder: '#4A5568',
+                primaryText: '#FFFFFF',
+                secondaryText: '#A0AEC0',
+                directionColors: {
+                    N: '#E53E3E',
+                    E: '#38B2AC',
+                    S: '#4299E1',
+                    W: '#ED8936'
+                },
+                markersHigh: '#E2E8F0',
+                markersMid: '#A0AEC0',
+                markersLow: '#4A5568',
+                qiblaArrow: '#48BB78',
+                qiblaArrowDark: '#2F855A',
+            };
+        } else {
+            return {
+                gradientColors: ['#EDF2F7', '#F7FAFC', '#FFFFFF'] as const,
+                compassBg: '#FFFFFF',
+                compassBorder: '#E2E8F0',
+                compassCenter: 'rgba(255, 255, 255, 0.95)',
+                cardBg: 'rgba(255, 255, 255, 0.9)',
+                cardBorder: '#E2E8F0',
+                primaryText: '#2D3748',
+                secondaryText: '#4A5568',
+                directionColors: {
+                    N: '#E53E3E',
+                    E: '#00A3A3',
+                    S: '#3182CE',
+                    W: '#DD6B20'
+                },
+                markersHigh: '#2D3748',
+                markersMid: '#4A5568',
+                markersLow: '#A0AEC0',
+                qiblaArrow: '#38A169',
+                qiblaArrowDark: '#2F7D32',
+            };
+        }
+    };
+
+    const themeColors = getThemeColors();
 
     // Calculate Qibla direction using proper great circle calculation
     const calculateQiblaDirection = useCallback((userLat: number, userLng: number): number => {
@@ -174,10 +227,10 @@ export default function QiblaScreen() {
     // Get accuracy information
     const getAccuracyInfo = () => {
         switch (accuracy) {
-            case 'high': return { text: "Yüksek Doğruluk", color: "#27AE60", emoji: "🎯" };
-            case 'medium': return { text: "Orta Doğruluk", color: "#F39C12", emoji: "📍" };
-            case 'low': return { text: "Düşük Doğruluk", color: "#E74C3C", emoji: "⚠️" };
-            default: return { text: "Kalibre Ediliyor", color: "#95A5A6", emoji: "🔄" };
+            case 'high': return { text: "Yüksek Doğruluk", color: colors.success, emoji: "🎯" };
+            case 'medium': return { text: "Orta Doğruluk", color: colors.warning, emoji: "📍" };
+            case 'low': return { text: "Düşük Doğruluk", color: colors.error, emoji: "⚠️" };
+            default: return { text: "Kalibre Ediliyor", color: colors.textMuted, emoji: "🔄" };
         }
     };
 
@@ -193,12 +246,12 @@ export default function QiblaScreen() {
     const accuracyInfo = getAccuracyInfo();
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, { backgroundColor: themeColors.gradientColors[0] }]}>
             <Stack.Screen options={{ title: 'Kıble', headerShown: false }} />
 
             {/* Background */}
             <LinearGradient
-                colors={['#0F1419', '#1A202C', '#2D3748']}
+                colors={themeColors.gradientColors}
                 locations={[0, 0.5, 1]}
                 style={styles.gradientBackground}
             />
@@ -206,8 +259,8 @@ export default function QiblaScreen() {
             {/* Header */}
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.title}>Kıble Pusulası</Text>
-                    <Text style={styles.subtitle}>
+                    <Text style={[styles.title, { color: themeColors.primaryText }]}>Kıble Pusulası</Text>
+                    <Text style={[styles.subtitle, { color: themeColors.secondaryText }]}>
                         {latitude && longitude ? `${latitude.toFixed(2)}, ${longitude.toFixed(2)}` : 'Konum Alınıyor...'}
                     </Text>
                 </View>
@@ -241,9 +294,9 @@ export default function QiblaScreen() {
                     <Svg width={COMPASS_SIZE} height={COMPASS_SIZE} viewBox={`0 0 ${COMPASS_SIZE} ${COMPASS_SIZE}`}>
                         <Defs>
                             <RadialGradient id="compassGrad" cx="50%" cy="50%" r="50%">
-                                <Stop offset="0%" stopColor="#2D3748" stopOpacity="0.9" />
-                                <Stop offset="70%" stopColor="#1A202C" stopOpacity="0.95" />
-                                <Stop offset="100%" stopColor="#0F1419" stopOpacity="1" />
+                                <Stop offset="0%" stopColor={themeColors.compassBg} stopOpacity="0.9" />
+                                <Stop offset="70%" stopColor={themeColors.gradientColors[1]} stopOpacity="0.95" />
+                                <Stop offset="100%" stopColor={themeColors.gradientColors[0]} stopOpacity="1" />
                             </RadialGradient>
                         </Defs>
 
@@ -253,7 +306,7 @@ export default function QiblaScreen() {
                             cy={COMPASS_SIZE / 2}
                             r={COMPASS_SIZE / 2 - 10}
                             fill="url(#compassGrad)"
-                            stroke="#4A5568"
+                            stroke={themeColors.compassBorder}
                             strokeWidth="2"
                         />
 
@@ -277,7 +330,7 @@ export default function QiblaScreen() {
                                     y1={y1}
                                     x2={x2}
                                     y2={y2}
-                                    stroke={isMajor ? "#E2E8F0" : isMinor ? "#A0AEC0" : "#4A5568"}
+                                    stroke={isMajor ? themeColors.markersHigh : isMinor ? themeColors.markersMid : themeColors.markersLow}
                                     strokeWidth={isMajor ? "3" : isMinor ? "2" : "1"}
                                 />
                             );
@@ -285,10 +338,10 @@ export default function QiblaScreen() {
 
                         {/* Direction letters */}
                         {[
-                            { dir: 'N', angle: 0, color: '#E53E3E' },
-                            { dir: 'E', angle: 90, color: '#38B2AC' },
-                            { dir: 'S', angle: 180, color: '#4299E1' },
-                            { dir: 'W', angle: 270, color: '#ED8936' }
+                            { dir: 'N', angle: 0, color: themeColors.directionColors.N },
+                            { dir: 'E', angle: 90, color: themeColors.directionColors.E },
+                            { dir: 'S', angle: 180, color: themeColors.directionColors.S },
+                            { dir: 'W', angle: 270, color: themeColors.directionColors.W }
                         ].map(({ dir, angle, color }) => {
                             const radius = COMPASS_SIZE / 2 - 45;
                             const x = COMPASS_SIZE / 2 + Math.sin((angle * Math.PI) / 180) * radius;
@@ -323,7 +376,7 @@ export default function QiblaScreen() {
                                     textAnchor="middle"
                                     fontSize="14"
                                     fontWeight="500"
-                                    fill="#A0AEC0"
+                                    fill={themeColors.secondaryText}
                                 >
                                     {degree}°
                                 </SvgText>
@@ -349,8 +402,8 @@ export default function QiblaScreen() {
                     <Svg width={60} height={COMPASS_SIZE * 0.7} viewBox="0 0 60 200">
                         <Defs>
                             <RadialGradient id="arrowGrad" cx="50%" cy="50%" r="50%">
-                                <Stop offset="0%" stopColor="#48BB78" stopOpacity="1" />
-                                <Stop offset="100%" stopColor="#2F855A" stopOpacity="1" />
+                                <Stop offset="0%" stopColor={themeColors.qiblaArrow} stopOpacity="1" />
+                                <Stop offset="100%" stopColor={themeColors.qiblaArrowDark} stopOpacity="1" />
                             </RadialGradient>
                         </Defs>
 
@@ -358,40 +411,52 @@ export default function QiblaScreen() {
                         <Path
                             d="M30,10 L22,160 L30,150 L38,160 Z"
                             fill="url(#arrowGrad)"
-                            stroke="#1A365D"
+                            stroke={themeColors.qiblaArrowDark}
                             strokeWidth="2"
                         />
 
                         {/* Kaaba symbol */}
-                        <Circle cx="30" cy="180" r="18" fill="#2F855A" stroke="#1A365D" strokeWidth="2" />
+                        <Circle cx="30" cy="180" r="18" fill={themeColors.qiblaArrowDark} stroke={themeColors.compassBorder} strokeWidth="2" />
                         <SvgText x="30" y="188" textAnchor="middle" fontSize="20" fill="#FFFFFF">🕋</SvgText>
                     </Svg>
                 </Animated.View>
 
                 {/* Center Info */}
-                <View style={styles.centerInfo}>
-                    <Text style={styles.qiblaAngle}>{Math.round(qiblaDirection)}°</Text>
-                    <Text style={styles.qiblaLabel}>Kıble</Text>
-                    <Text style={styles.deviceAngle}>{Math.round(deviceHeading)}°</Text>
+                <View style={[styles.centerInfo, {
+                    backgroundColor: themeColors.compassCenter,
+                    borderColor: themeColors.compassBorder
+                }]}>
+                    <Text style={[styles.qiblaAngle, { color: themeColors.qiblaArrow }]}>{Math.round(qiblaDirection)}°</Text>
+                    <Text style={[styles.qiblaLabel, { color: themeColors.secondaryText }]}>Kıble</Text>
+                    <Text style={[styles.deviceAngle, { color: themeColors.primaryText }]}>{Math.round(deviceHeading)}°</Text>
                 </View>
             </View>
 
             {/* Bottom Info Panel */}
             <View style={styles.bottomPanel}>
-                <View style={styles.statusCard}>
-                    <Text style={styles.statusTitle}>{getStatusMessage()}</Text>
-                    <Text style={styles.statusSubtitle}>
+                <View style={[styles.statusCard, {
+                    backgroundColor: themeColors.cardBg,
+                    borderColor: themeColors.cardBorder
+                }]}>
+                    <Text style={[styles.statusTitle, { color: themeColors.primaryText }]}>{getStatusMessage()}</Text>
+                    <Text style={[styles.statusSubtitle, { color: themeColors.secondaryText }]}>
                         Cihaz yönünden {angleDifference.toFixed(1)}° fark var
                     </Text>
                 </View>
 
                 <View style={styles.infoGrid}>
-                    <View style={styles.infoCard}>
-                        <Text style={styles.infoLabel}>Mesafe</Text>
-                        <Text style={styles.infoValue}>{Math.round(distanceToKaaba)} km</Text>
+                    <View style={[styles.infoCard, {
+                        backgroundColor: themeColors.cardBg,
+                        borderColor: themeColors.cardBorder
+                    }]}>
+                        <Text style={[styles.infoLabel, { color: themeColors.secondaryText }]}>Mesafe</Text>
+                        <Text style={[styles.infoValue, { color: themeColors.primaryText }]}>{Math.round(distanceToKaaba)} km</Text>
                     </View>
-                    <View style={styles.infoCard}>
-                        <Text style={styles.infoLabel}>Doğruluk</Text>
+                    <View style={[styles.infoCard, {
+                        backgroundColor: themeColors.cardBg,
+                        borderColor: themeColors.cardBorder
+                    }]}>
+                        <Text style={[styles.infoLabel, { color: themeColors.secondaryText }]}>Doğruluk</Text>
                         <Text style={[styles.infoValue, { color: accuracyInfo.color }]}>
                             {accuracyInfo.text.split(' ')[0]}
                         </Text>
@@ -401,11 +466,11 @@ export default function QiblaScreen() {
 
             {/* Debug Info (Development only) */}
             {__DEV__ && (
-                <View style={styles.debugPanel}>
-                    <Text style={styles.debugTitle}>Debug Bilgileri</Text>
-                    <Text style={styles.debugText}>Konum: {latitude?.toFixed(4)}, {longitude?.toFixed(4)}</Text>
-                    <Text style={styles.debugText}>Cihaz: {deviceHeading.toFixed(1)}° | Kıble: {qiblaDirection.toFixed(1)}°</Text>
-                    <Text style={styles.debugText}>Açı Farkı: {angleDifference.toFixed(1)}° | Doğruluk: {accuracy}</Text>
+                <View style={[styles.debugPanel, { backgroundColor: colors.overlay }]}>
+                    <Text style={[styles.debugTitle, { color: themeColors.primaryText }]}>Debug Bilgileri</Text>
+                    <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>Konum: {latitude?.toFixed(4)}, {longitude?.toFixed(4)}</Text>
+                    <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>Cihaz: {deviceHeading.toFixed(1)}° | Kıble: {qiblaDirection.toFixed(1)}°</Text>
+                    <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>Açı Farkı: {angleDifference.toFixed(1)}° | Doğruluk: {accuracy}</Text>
                 </View>
             )}
         </SafeAreaView>
@@ -415,7 +480,6 @@ export default function QiblaScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F1419',
     },
     gradientBackground: {
         position: 'absolute',
@@ -435,12 +499,10 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#FFFFFF',
         marginBottom: 4,
     },
     subtitle: {
         fontSize: 14,
-        color: '#A0AEC0',
         fontWeight: '500',
     },
     accuracyBadge: {
@@ -479,14 +541,12 @@ const styles = StyleSheet.create({
     },
     centerInfo: {
         position: 'absolute',
-        backgroundColor: 'rgba(45, 55, 72, 0.95)',
         borderRadius: 60,
         width: 120,
         height: 120,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 3,
-        borderColor: '#4A5568',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
@@ -496,17 +556,14 @@ const styles = StyleSheet.create({
     qiblaAngle: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#48BB78',
         marginBottom: 2,
     },
     qiblaLabel: {
         fontSize: 12,
-        color: '#A0AEC0',
         marginBottom: 4,
     },
     deviceAngle: {
         fontSize: 14,
-        color: '#E2E8F0',
         fontWeight: '600',
     },
     bottomPanel: {
@@ -514,24 +571,20 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
     },
     statusCard: {
-        backgroundColor: 'rgba(45, 55, 72, 0.9)',
         borderRadius: 16,
         padding: 20,
         marginBottom: 16,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#4A5568',
     },
     statusTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#FFFFFF',
         textAlign: 'center',
         marginBottom: 8,
     },
     statusSubtitle: {
         fontSize: 14,
-        color: '#A0AEC0',
         textAlign: 'center',
     },
     infoGrid: {
@@ -539,17 +592,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     infoCard: {
-        backgroundColor: 'rgba(45, 55, 72, 0.9)',
         borderRadius: 12,
         padding: 16,
         flex: 0.48,
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#4A5568',
     },
     infoLabel: {
         fontSize: 12,
-        color: '#A0AEC0',
         marginBottom: 8,
         textTransform: 'uppercase',
         letterSpacing: 1,
@@ -557,25 +607,21 @@ const styles = StyleSheet.create({
     infoValue: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#FFFFFF',
     },
     debugPanel: {
         position: 'absolute',
         bottom: 10,
         left: 10,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
         padding: 12,
         borderRadius: 8,
         maxWidth: width * 0.9,
     },
     debugTitle: {
-        color: '#FFFFFF',
         fontSize: 12,
         fontWeight: 'bold',
         marginBottom: 4,
     },
     debugText: {
-        color: '#A0AEC0',
         fontSize: 10,
         fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
         marginBottom: 2,

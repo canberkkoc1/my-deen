@@ -1,6 +1,7 @@
 import { CALCULATION_METHODS } from '@/constants';
 import { useLocation } from '@/context/LocationContext';
 import { usePrayerTimes } from '@/context/PrayerTimesContext';
+import { useTheme } from '@/context/ThemeContext';
 import { SettingSection } from '@/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,6 +15,7 @@ export default function SettingsScreen() {
     const { t, i18n } = useTranslation();
     const { requestLocationPermission } = useLocation();
     const { refreshPrayerTimes } = usePrayerTimes();
+    const { isDark, setThemeMode, colors } = useTheme();
     const [modalVisible, setModalVisible] = useState(false);
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
     const [settings, setSettings] = useState<SettingSection[]>([
@@ -62,7 +64,7 @@ export default function SettingsScreen() {
                     title: t('appearance.darkTheme'),
                     description: t('appearance.darkThemeDesc'),
                     type: 'switch',
-                    value: false,
+                    value: isDark,
                 },
             ],
         },
@@ -86,6 +88,15 @@ export default function SettingsScreen() {
         loadSettings();
     }, []);
 
+    // Update dark theme switch when theme changes
+    useEffect(() => {
+        setSettings(currentSettings => {
+            const newSettings = [...currentSettings];
+            newSettings[2].items[0].value = isDark;
+            return newSettings;
+        });
+    }, [isDark]);
+
     const handleSettingChange = async (sectionIndex: number, itemIndex: number, newValue: boolean | number) => {
         const newSettings = [...settings];
         newSettings[sectionIndex].items[itemIndex].value = newValue;
@@ -101,6 +112,11 @@ export default function SettingsScreen() {
                 console.error('Hesaplama metodu kaydedilemedi:', error);
             }
             setModalVisible(false);
+        }
+
+        // Dark theme değişikliği
+        if (sectionIndex === 2 && itemIndex === 0) {
+            setThemeMode(newValue ? 'dark' : 'light');
         }
     };
 
@@ -118,15 +134,15 @@ export default function SettingsScreen() {
             visible={modalVisible}
             onRequestClose={() => setModalVisible(false)}
         >
-            <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Hesaplama Metodu Seçin</Text>
+            <View style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}>
+                <View style={[styles.modalContent, { backgroundColor: colors.sectionBackground }]}>
+                    <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+                        <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Hesaplama Metodu Seçin</Text>
                         <TouchableOpacity
                             onPress={() => setModalVisible(false)}
                             style={styles.closeButton}
                         >
-                            <MaterialCommunityIcons name="close" size={24} color="#2c3e50" />
+                            <MaterialCommunityIcons name="close" size={24} color={colors.textSecondary} />
                         </TouchableOpacity>
                     </View>
 
@@ -136,26 +152,27 @@ export default function SettingsScreen() {
                                 key={method.id}
                                 style={[
                                     styles.methodItem,
-                                    settings[0].items[0].value === method.id && styles.selectedMethodItem,
+                                    { backgroundColor: colors.surface },
+                                    settings[0].items[0].value === method.id && { borderColor: colors.primary },
                                 ]}
                                 onPress={() => handleSettingChange(0, 0, method.id)}
                             >
-                                <View style={styles.methodIcon}>
+                                <View style={[styles.methodIcon, { backgroundColor: colors.background }]}>
                                     <MaterialCommunityIcons
                                         name={method.icon}
                                         size={28}
-                                        color={settings[0].items[0].value === method.id ? '#2196F3' : '#95a5a6'}
+                                        color={settings[0].items[0].value === method.id ? colors.primary : colors.textMuted}
                                     />
                                 </View>
                                 <View style={styles.methodInfo}>
-                                    <Text style={styles.methodName}>{method.name}</Text>
-                                    <Text style={styles.methodDescription}>{method.description}</Text>
+                                    <Text style={[styles.methodName, { color: colors.textPrimary }]}>{method.name}</Text>
+                                    <Text style={[styles.methodDescription, { color: colors.textSecondary }]}>{method.description}</Text>
                                 </View>
                                 {settings[0].items[0].value === method.id && (
                                     <MaterialCommunityIcons
                                         name="check-circle"
                                         size={24}
-                                        color="#2196F3"
+                                        color={colors.primary}
                                         style={styles.checkIcon}
                                     />
                                 )}
@@ -174,15 +191,15 @@ export default function SettingsScreen() {
             visible={languageModalVisible}
             onRequestClose={() => setLanguageModalVisible(false)}
         >
-            <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>{t('language.select')}</Text>
+            <View style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}>
+                <View style={[styles.modalContent, { backgroundColor: colors.sectionBackground }]}>
+                    <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+                        <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>{t('language.select')}</Text>
                         <TouchableOpacity
                             onPress={() => setLanguageModalVisible(false)}
                             style={styles.closeButton}
                         >
-                            <MaterialCommunityIcons name="close" size={24} color="#2c3e50" />
+                            <MaterialCommunityIcons name="close" size={24} color={colors.textSecondary} />
                         </TouchableOpacity>
                     </View>
 
@@ -190,25 +207,26 @@ export default function SettingsScreen() {
                         <TouchableOpacity
                             style={[
                                 styles.methodItem,
-                                i18n.language === 'tr' && styles.selectedMethodItem,
+                                { backgroundColor: colors.surface },
+                                i18n.language === 'tr' && { borderColor: colors.primary },
                             ]}
                             onPress={() => handleLanguageChange('tr')}
                         >
-                            <View style={styles.methodIcon}>
+                            <View style={[styles.methodIcon, { backgroundColor: colors.background }]}>
                                 <MaterialCommunityIcons
                                     name="translate"
                                     size={28}
-                                    color={i18n.language === 'tr' ? '#2196F3' : '#95a5a6'}
+                                    color={i18n.language === 'tr' ? colors.primary : colors.textMuted}
                                 />
                             </View>
                             <View style={styles.methodInfo}>
-                                <Text style={styles.methodName}>Türkçe</Text>
+                                <Text style={[styles.methodName, { color: colors.textPrimary }]}>Türkçe</Text>
                             </View>
                             {i18n.language === 'tr' && (
                                 <MaterialCommunityIcons
                                     name="check-circle"
                                     size={24}
-                                    color="#2196F3"
+                                    color={colors.primary}
                                     style={styles.checkIcon}
                                 />
                             )}
@@ -217,25 +235,26 @@ export default function SettingsScreen() {
                         <TouchableOpacity
                             style={[
                                 styles.methodItem,
-                                i18n.language === 'en' && styles.selectedMethodItem,
+                                { backgroundColor: colors.surface },
+                                i18n.language === 'en' && { borderColor: colors.primary },
                             ]}
                             onPress={() => handleLanguageChange('en')}
                         >
-                            <View style={styles.methodIcon}>
+                            <View style={[styles.methodIcon, { backgroundColor: colors.background }]}>
                                 <MaterialCommunityIcons
                                     name="translate"
                                     size={28}
-                                    color={i18n.language === 'en' ? '#2196F3' : '#95a5a6'}
+                                    color={i18n.language === 'en' ? colors.primary : colors.textMuted}
                                 />
                             </View>
                             <View style={styles.methodInfo}>
-                                <Text style={styles.methodName}>English</Text>
+                                <Text style={[styles.methodName, { color: colors.textPrimary }]}>English</Text>
                             </View>
                             {i18n.language === 'en' && (
                                 <MaterialCommunityIcons
                                     name="check-circle"
                                     size={24}
-                                    color="#2196F3"
+                                    color={colors.primary}
                                     style={styles.checkIcon}
                                 />
                             )}
@@ -247,13 +266,14 @@ export default function SettingsScreen() {
     );
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.sectionBackground }]} edges={['top']}>
             <Stack.Screen
                 options={{
                     title: t('common.settings'),
                     headerStyle: {
-                        backgroundColor: '#f8f9fa',
+                        backgroundColor: colors.sectionBackground,
                     },
+                    headerTintColor: colors.textPrimary,
                     headerShadowVisible: false,
                 }}
             />
@@ -262,11 +282,11 @@ export default function SettingsScreen() {
                 {settings.map((section, sectionIndex) => (
                     <View key={section.title} style={styles.section}>
                         <View style={styles.sectionHeader}>
-                            <MaterialCommunityIcons name={section.icon} size={26} color="#4A90E2" />
-                            <Text style={styles.sectionTitle}>{section.title}</Text>
+                            <MaterialCommunityIcons name={section.icon} size={26} color={colors.sectionHeader} />
+                            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{section.title}</Text>
                         </View>
 
-                        <View style={styles.sectionContent}>
+                        <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
                             {section.items.map((item, itemIndex) => {
                                 const isLastItem = itemIndex === section.items.length - 1;
                                 return (
@@ -274,13 +294,14 @@ export default function SettingsScreen() {
                                         key={item.title}
                                         style={[
                                             styles.settingItem,
+                                            { borderBottomColor: colors.border },
                                             isLastItem && { borderBottomWidth: 0 },
                                         ]}
                                     >
                                         <View style={styles.settingInfo}>
-                                            <Text style={styles.settingTitle}>{item.title}</Text>
+                                            <Text style={[styles.settingTitle, { color: colors.textSecondary }]}>{item.title}</Text>
                                             {item.description && (
-                                                <Text style={styles.settingDescription}>{item.description}</Text>
+                                                <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>{item.description}</Text>
                                             )}
                                         </View>
 
@@ -288,8 +309,8 @@ export default function SettingsScreen() {
                                             <Switch
                                                 value={item.value as boolean}
                                                 onValueChange={(newValue) => handleSettingChange(sectionIndex, itemIndex, newValue)}
-                                                trackColor={{ false: '#E2E8F0', true: '#63B3ED' }}
-                                                thumbColor={item.value ? '#4299E1' : '#f4f3f4'}
+                                                trackColor={{ false: colors.separator, true: colors.primary }}
+                                                thumbColor={item.value ? colors.accent : colors.textMuted}
                                                 style={styles.switch}
                                             />
                                         ) : (
@@ -297,13 +318,13 @@ export default function SettingsScreen() {
                                                 style={styles.methodSelector}
                                                 onPress={() => setModalVisible(true)}
                                             >
-                                                <Text style={styles.selectedMethod}>
+                                                <Text style={[styles.selectedMethod, { color: colors.primary }]}>
                                                     {CALCULATION_METHODS.find(m => m.id === item.value)?.name}
                                                 </Text>
                                                 <MaterialCommunityIcons
                                                     name="chevron-right"
                                                     size={24}
-                                                    color="#A0AEC0"
+                                                    color={colors.textMuted}
                                                 />
                                             </TouchableOpacity>
                                         )}
@@ -317,27 +338,27 @@ export default function SettingsScreen() {
                 {/* Dil seçimi bölümü */}
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
-                        <MaterialCommunityIcons name="translate" size={26} color="#4A90E2" />
-                        <Text style={styles.sectionTitle}>{t('language.title')}</Text>
+                        <MaterialCommunityIcons name="translate" size={26} color={colors.sectionHeader} />
+                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('language.title')}</Text>
                     </View>
 
-                    <View style={styles.sectionContent}>
+                    <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
                         <TouchableOpacity
                             style={[styles.settingItem, { borderBottomWidth: 0 }]}
                             onPress={() => setLanguageModalVisible(true)}
                         >
                             <View style={styles.settingInfo}>
-                                <Text style={styles.settingTitle}>{t('language.select')}</Text>
-                                <Text style={styles.settingDescription}>{t('language.selectDesc')}</Text>
+                                <Text style={[styles.settingTitle, { color: colors.textSecondary }]}>{t('language.select')}</Text>
+                                <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>{t('language.selectDesc')}</Text>
                             </View>
                             <View style={styles.methodSelector}>
-                                <Text style={styles.selectedMethod}>
+                                <Text style={[styles.selectedMethod, { color: colors.primary }]}>
                                     {i18n.language === 'tr' ? 'Türkçe' : 'English'}
                                 </Text>
                                 <MaterialCommunityIcons
                                     name="chevron-right"
                                     size={24}
-                                    color="#A0AEC0"
+                                    color={colors.textMuted}
                                 />
                             </View>
                         </TouchableOpacity>
@@ -345,7 +366,7 @@ export default function SettingsScreen() {
                 </View>
 
                 <View style={styles.footer}>
-                    <Text style={styles.version}>{t('common.version')} 1.0.0</Text>
+                    <Text style={[styles.version, { color: colors.textMuted }]}>{t('common.version')} 1.0.0</Text>
                 </View>
             </ScrollView>
 
@@ -358,7 +379,6 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7F9FC',
     },
     scrollView: {
         flex: 1,
@@ -375,11 +395,9 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#2D3748',
         marginLeft: 12,
     },
     sectionContent: {
-        backgroundColor: '#FFFFFF',
         borderRadius: 16,
         marginHorizontal: 24,
         paddingHorizontal: 8,
@@ -396,7 +414,6 @@ const styles = StyleSheet.create({
         paddingVertical: 18,
         paddingHorizontal: 16,
         borderBottomWidth: 1,
-        borderBottomColor: '#EDF2F7',
     },
     settingInfo: {
         flex: 1,
@@ -405,12 +422,10 @@ const styles = StyleSheet.create({
     settingTitle: {
         fontSize: 16,
         fontWeight: '500',
-        color: '#4A5568',
         marginBottom: 4,
     },
     settingDescription: {
         fontSize: 13,
-        color: '#718096',
     },
     switch: {
         transform: [{ scale: 0.9 }],
@@ -422,19 +437,16 @@ const styles = StyleSheet.create({
     },
     version: {
         fontSize: 14,
-        color: '#A0AEC0',
     },
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
         justifyContent: 'flex-end',
     },
     modalContent: {
-        backgroundColor: '#F7F9FC',
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
         maxHeight: '80%',
-        paddingBottom: 30, // For safe area
+        paddingBottom: 30,
     },
     modalHeader: {
         flexDirection: 'row',
@@ -442,12 +454,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 24,
         borderBottomWidth: 1,
-        borderBottomColor: '#EDF2F7',
     },
     modalTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#2D3748',
     },
     closeButton: {
         padding: 4,
@@ -460,7 +470,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 16,
-        backgroundColor: '#FFFFFF',
         borderRadius: 16,
         marginBottom: 12,
         shadowColor: '#4A5568',
@@ -471,14 +480,10 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'transparent',
     },
-    selectedMethodItem: {
-        borderColor: '#4299E1',
-    },
     methodIcon: {
         width: 48,
         height: 48,
         borderRadius: 24,
-        backgroundColor: '#EDF2F7',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 16,
@@ -489,12 +494,10 @@ const styles = StyleSheet.create({
     methodName: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#2D3748',
         marginBottom: 4,
     },
     methodDescription: {
         fontSize: 14,
-        color: '#718096',
     },
     checkIcon: {
         marginLeft: 12,
@@ -505,7 +508,6 @@ const styles = StyleSheet.create({
     },
     selectedMethod: {
         fontSize: 14,
-        color: '#4299E1',
         marginRight: 4,
         fontWeight: '500',
     },

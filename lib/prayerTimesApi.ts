@@ -126,8 +126,9 @@ export class PrayerTimesApi {
       latitude: request.latitude.toString(),
       longitude: request.longitude.toString(),
       method: request.method.toString(),
-      timezone: timezone,
-      school: "1",
+      shafaq: "general",
+      timezonestring: timezone,
+      calendarMethod: "DIYANET",
     });
 
     return `${API_BASE_URL}/timings/${request.date}?${params.toString()}`;
