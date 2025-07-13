@@ -42,17 +42,22 @@ export async function registerPushToken() {
     Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Istanbul";
 
   // 👇 varsayılan veya ayar ekranından gelen hesaplama yöntemi
-  const calculation_method = 2; // Örn: MWL
+  const calculation_method = 13; // Örn: MWL
 
-  const { error } = await supabase.from("user_push_tokens").upsert({
-    token,
-    latitude,
-    longitude,
-    language,
-    timezone,
-    calculation_method,
-    updated_at: new Date().toISOString(),
-  });
+  const { error } = await supabase.from("user_push_tokens").upsert(
+    {
+      token,
+      latitude,
+      longitude,
+      language,
+      timezone,
+      calculation_method,
+      updated_at: new Date().toISOString(),
+    },
+    {
+      onConflict: "token",
+    }
+  );
 
   if (error) {
     console.error("Push token kaydı sırasında hata:", error.message);

@@ -59,7 +59,46 @@ CREATE INDEX IF NOT EXISTS idx_push_tokens_token ON public.push_tokens(token);
 CREATE INDEX IF NOT EXISTS idx_push_tokens_active ON public.push_tokens(is_active);
 
 -- =============================================================================
--- 4. PRAYER_TIMES_CACHE TABLE
+-- 4. USER_PUSH_TOKENS TABLE (For Functions)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS public.user_push_tokens (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    token VARCHAR(512) NOT NULL UNIQUE,
+    latitude DECIMAL(10, 8) DEFAULT NULL,
+    longitude DECIMAL(11, 8) DEFAULT NULL,
+    language VARCHAR(10) DEFAULT 'en',
+    timezone VARCHAR(100) DEFAULT 'Europe/Istanbul',
+    calculation_method INTEGER DEFAULT 2,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create index for token lookups
+CREATE INDEX IF NOT EXISTS idx_user_push_tokens_token ON public.user_push_tokens(token);
+
+-- =============================================================================
+-- 5. SCHEDULED_NOTIFICATIONS TABLE
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS public.scheduled_notifications (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    token VARCHAR(512) NOT NULL,
+    prayer_name VARCHAR(50) NOT NULL,
+    scheduled_for_date DATE NOT NULL,
+    send_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    body TEXT NOT NULL,
+    sent BOOLEAN DEFAULT false,
+    sent_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_scheduled_notifications_token ON public.scheduled_notifications(token);
+CREATE INDEX IF NOT EXISTS idx_scheduled_notifications_sent ON public.scheduled_notifications(sent);
+CREATE INDEX IF NOT EXISTS idx_scheduled_notifications_send_at ON public.scheduled_notifications(send_at);
+
+-- =============================================================================
+-- 6. PRAYER_TIMES_CACHE TABLE
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS public.prayer_times_cache (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -82,7 +121,7 @@ CREATE INDEX IF NOT EXISTS idx_prayer_times_cache_lookup
 ON public.prayer_times_cache(date, latitude, longitude, calculation_method);
 
 -- =============================================================================
--- 5. NOTIFICATION_JOBS TABLE
+-- 7. NOTIFICATION_JOBS TABLE
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS public.notification_jobs (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -102,7 +141,7 @@ CREATE INDEX IF NOT EXISTS idx_notification_jobs_status ON public.notification_j
 CREATE INDEX IF NOT EXISTS idx_notification_jobs_notification_time ON public.notification_jobs(notification_time);
 
 -- =============================================================================
--- 6. NOTIFICATION_LOGS TABLE
+-- 8. NOTIFICATION_LOGS TABLE
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS public.notification_logs (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -121,7 +160,7 @@ CREATE INDEX IF NOT EXISTS idx_notification_logs_status ON public.notification_l
 CREATE INDEX IF NOT EXISTS idx_notification_logs_created_at ON public.notification_logs(created_at);
 
 -- =============================================================================
--- 7. TRIGGERS FOR UPDATED_AT TIMESTAMPS
+-- 9. TRIGGERS FOR UPDATED_AT TIMESTAMPS
 -- =============================================================================
 
 -- Create function to update updated_at timestamp
@@ -146,15 +185,19 @@ CREATE TRIGGER update_push_tokens_updated_at
     BEFORE UPDATE ON public.push_tokens 
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+CREATE TRIGGER update_user_push_tokens_updated_at 
+    BEFORE UPDATE ON public.user_push_tokens 
+    FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
 -- =============================================================================
--- 8. ROW LEVEL SECURITY (RLS) POLICIES
+-- 10. ROW LEVEL SECURITY (RLS) POLICIES
 -- =============================================================================
 
 -- Note: RLS is disabled for device-based authentication
 -- Tables are set to public access for this implementation
 
 -- =============================================================================
--- 9. INITIAL DATA CONSTRAINTS
+-- 11. INITIAL DATA CONSTRAINTS
 -- =============================================================================
 
 -- Add check constraints
@@ -188,5 +231,5 @@ SELECT
     hastriggers
 FROM pg_tables 
 WHERE schemaname = 'public' 
-    AND tablename IN ('users', 'user_profiles', 'push_tokens', 'prayer_times_cache', 'notification_jobs', 'notification_logs')
+    AND tablename IN ('users', 'user_profiles', 'push_tokens', 'user_push_tokens', 'scheduled_notifications', 'prayer_times_cache', 'notification_jobs', 'notification_logs')
 ORDER BY tablename; 
