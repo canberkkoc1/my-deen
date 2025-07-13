@@ -2,6 +2,7 @@ import { LocationProvider } from '@/context/LocationContext';
 import { PrayerTimesProvider } from '@/context/PrayerTimesContext';
 import { ThemeProvider as CustomThemeProvider, useTheme } from '@/context/ThemeContext';
 import '@/lib/i18n';
+import { registerPushToken } from '@/service/registerPushNot';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -28,6 +29,10 @@ export default function RootLayout() {
 
   useEffect(() => {
     SplashScreen.hideAsync();
+  }, []);
+
+  useEffect(() => {
+    registerPushToken();
   }, []);
 
   if (!loaded) {

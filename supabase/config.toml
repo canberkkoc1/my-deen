@@ -1,0 +1,22 @@
+
+[functions.schedule-prayer-notifications]
+enabled = true
+verify_jwt = true
+import_map = "./functions/schedule-prayer-notifications/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/schedule-prayer-notifications/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/schedule-prayer-notifications/*.html" ]
+
+[functions.send-prayer-notifications]
+enabled = true
+verify_jwt = true
+import_map = "./functions/send-prayer-notifications/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/send-prayer-notifications/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/send-prayer-notifications/*.html" ]
