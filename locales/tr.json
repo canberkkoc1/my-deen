@@ -34,7 +34,13 @@
         "prayerTimeNotifications": "Namaz Vakti Bildirimleri",
         "prayerTimeNotificationsDesc": "Her namaz vakti için bildirim al",
         "notificationSound": "Bildirim Sesi",
-        "notificationSoundDesc": "Bildirimler için ses çal"
+        "notificationSoundDesc": "Bildirimler için ses çal",
+        "permissionRequired": "Bildirim İzni Gerekli",
+        "permissionRequiredDesc": "Namaz vakti bildirimlerini alabilmek için lütfen ayarlardan bildirim izni verin.",
+        "enabled": "Bildirimler Açıldı",
+        "enabledDesc": "Artık namaz vakitlerinden 15 dakika önce bildirim alacaksınız.",
+        "disabled": "Bildirimler Kapatıldı",
+        "disabledDesc": "Namaz vakti bildirimleri artık gönderilmeyecek."
     },
     "appearance": {
         "title": "Görünüm",

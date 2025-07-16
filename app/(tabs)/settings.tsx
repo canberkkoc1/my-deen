@@ -2,13 +2,15 @@ import { CALCULATION_METHODS } from '@/constants';
 import { useLocation } from '@/context/LocationContext';
 import { usePrayerTimes } from '@/context/PrayerTimesContext';
 import { useTheme } from '@/context/ThemeContext';
+import { registerPushToken } from '@/service/registerPushNot';
 import { SettingSection } from '@/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import { Stack } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SettingsScreen() {
@@ -74,10 +76,32 @@ export default function SettingsScreen() {
         const loadSettings = async () => {
             try {
                 const storedMethodId = await AsyncStorage.getItem('calculationMethod');
-                if (storedMethodId !== null) {
+                const notificationsEnabled = await AsyncStorage.getItem('notificationsEnabled');
+                const notificationSound = await AsyncStorage.getItem('notificationSound');
+
+                if (storedMethodId !== null || notificationsEnabled !== null || notificationSound !== null) {
                     setSettings(currentSettings => {
                         const newSettings = [...currentSettings];
-                        newSettings[0].items[0].value = JSON.parse(storedMethodId);
+
+                        // Calculation method
+                        if (storedMethodId !== null) {
+                            newSettings[0].items[0].value = JSON.parse(storedMethodId);
+                        }
+
+                        // Notifications enabled
+                        if (notificationsEnabled !== null) {
+                            newSettings[1].items[0].value = JSON.parse(notificationsEnabled);
+                        } else {
+                            newSettings[1].items[0].value = false; // Default: false
+                        }
+
+                        // Notification sound
+                        if (notificationSound !== null) {
+                            newSettings[1].items[1].value = JSON.parse(notificationSound);
+                        } else {
+                            newSettings[1].items[1].value = true; // Default: true
+                        }
+
                         return newSettings;
                     });
                 }
@@ -158,6 +182,62 @@ export default function SettingsScreen() {
                 console.error('Calculation method could not be saved:', error);
             }
             setModalVisible(false);
+        }
+
+        // Notification settings
+        if (sectionIndex === 1) {
+            try {
+                if (itemIndex === 0) {
+                    // Prayer time notifications toggle
+                    await AsyncStorage.setItem('notificationsEnabled', JSON.stringify(newValue));
+
+                    if (newValue) {
+                        // Notifications açıldı - izin kontrolü yap
+                        const { status } = await Notifications.getPermissionsAsync();
+                        if (status !== 'granted') {
+                            const { status: newStatus } = await Notifications.requestPermissionsAsync();
+                            if (newStatus !== 'granted') {
+                                Alert.alert(
+                                    t('notifications.permissionRequired'),
+                                    t('notifications.permissionRequiredDesc'),
+                                    [
+                                        { text: t('common.cancel'), style: 'cancel' },
+                                        {
+                                            text: t('common.settings'),
+                                            onPress: () => Linking.openSettings()
+                                        }
+                                    ]
+                                );
+                                // İzin verilmediyse ayarı geri değiştir
+                                newSettings[sectionIndex].items[itemIndex].value = false;
+                                setSettings([...newSettings]);
+                                await AsyncStorage.setItem('notificationsEnabled', JSON.stringify(false));
+                                return;
+                            }
+                        }
+
+                        // İzin varsa push token'ı yeniden kaydet
+                        await registerPushToken();
+
+                        Alert.alert(
+                            t('notifications.enabled'),
+                            t('notifications.enabledDesc')
+                        );
+                    } else {
+                        // Notifications kapatıldı, token'ı güncelleyelim
+                        await registerPushToken();
+                        Alert.alert(
+                            t('notifications.disabled'),
+                            t('notifications.disabledDesc')
+                        );
+                    }
+                } else if (itemIndex === 1) {
+                    // Notification sound toggle
+                    await AsyncStorage.setItem('notificationSound', JSON.stringify(newValue));
+                }
+            } catch (error) {
+                console.error('Notification setting could not be saved:', error);
+            }
         }
 
         // Dark theme değişikliği

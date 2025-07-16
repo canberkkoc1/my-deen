@@ -69,12 +69,14 @@ CREATE TABLE IF NOT EXISTS public.user_push_tokens (
     language VARCHAR(10) DEFAULT 'en',
     timezone VARCHAR(100) DEFAULT 'Europe/Istanbul',
     calculation_method INTEGER DEFAULT 2,
+    notification_enabled BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Create index for token lookups
 CREATE INDEX IF NOT EXISTS idx_user_push_tokens_token ON public.user_push_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_user_push_tokens_enabled ON public.user_push_tokens(notification_enabled);
 
 -- =============================================================================
 -- 5. SCHEDULED_NOTIFICATIONS TABLE
