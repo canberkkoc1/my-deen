@@ -9,6 +9,9 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-3782077697240059~6068378967"
+      },
       "supportsTablet": true,
       "bundleIdentifier": "com.dvcanberkkoc.mydeen",
       "infoPlist": {
@@ -53,6 +56,13 @@
         "imageWidth": 200,
         "resizeMode": "contain",
         "backgroundColor": "#ffffff"
+      }
+    ],
+    [
+      "react-native-google-mobile-ads",
+      {
+        "androidAppId": "ca-app-pub-3782077697240059~6068378967",
+        "iosAppId": "ca-app-pub-3782077697240059~6068378967"
       }
     ],
     [

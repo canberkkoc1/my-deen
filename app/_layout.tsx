@@ -1,3 +1,4 @@
+import { GlobalBanner } from '@/components/GlobalBanner';
 import { LocationProvider } from '@/context/LocationContext';
 import { PrayerTimesProvider } from '@/context/PrayerTimesContext';
 import { ThemeProvider as CustomThemeProvider, useTheme } from '@/context/ThemeContext';
@@ -10,6 +11,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import MobileAds from 'react-native-google-mobile-ads';
 import 'react-native-reanimated';
 
 // Set notification handler
@@ -66,6 +68,10 @@ export default function RootLayout() {
     };
   }, []);
 
+  useEffect(() => {
+    MobileAds().initialize();
+  }, []);
+
   if (!loaded) {
     // Async font loading only occurs in development.
     return null;
@@ -80,6 +86,7 @@ export default function RootLayout() {
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="+not-found" />
             </Stack>
+            <GlobalBanner />
             <StatusBar style="auto" />
           </NavigationThemeWrapper>
         </PrayerTimesProvider>
