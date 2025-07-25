@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import MobileAds from 'react-native-google-mobile-ads';
 import 'react-native-reanimated';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Set notification handler
 Notifications.setNotificationHandler({
@@ -32,6 +33,7 @@ function NavigationThemeWrapper({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       {children}
+      <StatusBar style={isDark ? "light" : "dark"} backgroundColor="transparent" translucent />
     </ThemeProvider>
   );
 }
@@ -78,19 +80,20 @@ export default function RootLayout() {
   }
 
   return (
-    <CustomThemeProvider>
-      <LocationProvider>
-        <PrayerTimesProvider>
-          <NavigationThemeWrapper>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-            <GlobalBanner />
-            <StatusBar style="auto" />
-          </NavigationThemeWrapper>
-        </PrayerTimesProvider>
-      </LocationProvider>
-    </CustomThemeProvider>
+    <SafeAreaProvider>
+      <CustomThemeProvider>
+        <LocationProvider>
+          <PrayerTimesProvider>
+            <NavigationThemeWrapper>
+              <GlobalBanner />
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </NavigationThemeWrapper>
+          </PrayerTimesProvider>
+        </LocationProvider>
+      </CustomThemeProvider>
+    </SafeAreaProvider>
   );
 }

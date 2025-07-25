@@ -262,6 +262,7 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         padding: 20,
+        paddingTop: 0,
     },
     errorContainer: {
         flexDirection: 'row',
