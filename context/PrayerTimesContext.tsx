@@ -12,6 +12,8 @@ interface PrayerTimesContextType {
     refreshPrayerTimes: () => Promise<void>;
     getNextPrayer: () => { name: string; time: string; isNextDay: boolean } | null;
     getTimeUntilNext: () => string | null;
+    use24Hour: boolean;
+    setUse24Hour: (value: boolean) => void;
 }
 
 const PrayerTimesContext = createContext<PrayerTimesContextType | undefined>(undefined);
@@ -24,6 +26,7 @@ export function PrayerTimesProvider({ children }: PrayerTimesProviderProps) {
     const [prayerTimes, setPrayerTimes] = useState<SimplePrayerTimes | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [use24Hour, setUse24HourState] = useState(true);
 
     const { latitude, longitude, loading: locationLoading, isUsingDefaultLocation } = useLocation();
 
@@ -87,6 +90,32 @@ export function PrayerTimesProvider({ children }: PrayerTimesProviderProps) {
         return prayerTimesApi.getTimeUntilNextPrayer(prayerTimes);
     };
 
+    // Set 24 hour format preference
+    const setUse24Hour = async (value: boolean) => {
+        try {
+            setUse24HourState(value);
+            await AsyncStorage.setItem('use24Hour', JSON.stringify(value));
+            debug.log(`24 saat formatı ayarı güncellendi: ${value}`);
+        } catch (error) {
+            debug.error('24 saat formatı ayarı kaydedilemedi:', error);
+        }
+    };
+
+    // Load 24 hour format preference on mount
+    useEffect(() => {
+        const loadTimeFormat = async () => {
+            try {
+                const stored24Hour = await AsyncStorage.getItem('use24Hour');
+                if (stored24Hour !== null) {
+                    setUse24HourState(JSON.parse(stored24Hour));
+                }
+            } catch (error) {
+                debug.error('24 saat formatı ayarı okunamadı:', error);
+            }
+        };
+        loadTimeFormat();
+    }, []);
+
     // Effect to fetch prayer times when location changes
     useEffect(() => {
         if (latitude && longitude && !locationLoading) {
@@ -137,7 +166,9 @@ export function PrayerTimesProvider({ children }: PrayerTimesProviderProps) {
         error,
         refreshPrayerTimes,
         getNextPrayer,
-        getTimeUntilNext
+        getTimeUntilNext,
+        use24Hour,
+        setUse24Hour
     };
 
     return (

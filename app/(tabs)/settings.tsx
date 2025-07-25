@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function SettingsScreen() {
     const { t, i18n } = useTranslation();
     const { requestLocationPermission } = useLocation();
-    const { refreshPrayerTimes } = usePrayerTimes();
+    const { refreshPrayerTimes, use24Hour, setUse24Hour } = usePrayerTimes();
     const { isDark, setThemeMode, colors } = useTheme();
     const [modalVisible, setModalVisible] = useState(false);
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
@@ -36,7 +36,7 @@ export default function SettingsScreen() {
                     title: t('prayerTimes.use24Hour'),
                     description: t('prayerTimes.use24HourDesc'),
                     type: 'switch',
-                    value: true,
+                    value: use24Hour,
                 },
             ],
         },
@@ -130,7 +130,7 @@ export default function SettingsScreen() {
                         title: t('prayerTimes.use24Hour'),
                         description: t('prayerTimes.use24HourDesc'),
                         type: 'switch',
-                        value: settings[0]?.items[1]?.value || true,
+                        value: use24Hour,
                     },
                 ],
             },
@@ -182,6 +182,11 @@ export default function SettingsScreen() {
                 console.error('Calculation method could not be saved:', error);
             }
             setModalVisible(false);
+        }
+
+        // 24 saat formatı ayarı
+        if (sectionIndex === 0 && itemIndex === 1) {
+            await setUse24Hour(newValue as boolean);
         }
 
         // Notification settings
@@ -420,7 +425,7 @@ export default function SettingsScreen() {
     );
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.sectionBackground }]} edges={['top']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.sectionBackground }]} edges={['bottom', 'left', 'right']}>
             <Stack.Screen
                 options={{
                     title: t('common.settings'),

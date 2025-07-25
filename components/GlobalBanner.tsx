@@ -21,7 +21,7 @@ export const GlobalBanner = () => {
         <View style={[
             styles.bannerContainer,
             {
-                paddingTop: insets.top + 0,
+                paddingTop: insets.top + 8, // Biraz daha padding ekledim
                 backgroundColor: colors.background,
                 borderBottomColor: colors.border,
             }
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     bannerContainer: {
         width: '100%',
         alignItems: 'center',
-        paddingVertical: 0,
+        paddingVertical: 8, // Biraz vertical padding
         borderBottomWidth: 0.5,
     }
 });

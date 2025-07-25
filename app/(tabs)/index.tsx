@@ -1,5 +1,6 @@
 import { usePrayerTimes } from '@/context/PrayerTimesContext';
 import { useTheme } from '@/context/ThemeContext';
+import { formatTime } from '@/helper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import React from 'react';
@@ -9,19 +10,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PrayerTimesScreen() {
     const { t } = useTranslation();
-    const { prayerTimes, loading, error, refreshPrayerTimes, getNextPrayer, getTimeUntilNext } = usePrayerTimes();
+    const { prayerTimes, loading, error, refreshPrayerTimes, getNextPrayer, getTimeUntilNext, use24Hour } = usePrayerTimes();
     const { colors, isDark } = useTheme();
 
     const nextPrayer = getNextPrayer();
     const timeUntilNext = getTimeUntilNext();
 
     const prayerList = prayerTimes ? [
-        { key: 'fajr', name: t('prayerTimes.prayers.fajr'), time: prayerTimes.fajr, icon: 'weather-night' },
-        { key: 'sunrise', name: t('prayerTimes.prayers.sunrise'), time: prayerTimes.sunrise, icon: 'weather-sunset-up' },
-        { key: 'dhuhr', name: t('prayerTimes.prayers.dhuhr'), time: prayerTimes.dhuhr, icon: 'weather-sunny' },
-        { key: 'asr', name: t('prayerTimes.prayers.asr'), time: prayerTimes.asr, icon: 'weather-sunset' },
-        { key: 'maghrib', name: t('prayerTimes.prayers.maghrib'), time: prayerTimes.maghrib, icon: 'weather-sunset-down' },
-        { key: 'isha', name: t('prayerTimes.prayers.isha'), time: prayerTimes.isha, icon: 'weather-night' },
+        { key: 'fajr', name: t('prayerTimes.prayers.fajr'), time: formatTime(prayerTimes.fajr, use24Hour), icon: 'weather-night' },
+        { key: 'sunrise', name: t('prayerTimes.prayers.sunrise'), time: formatTime(prayerTimes.sunrise, use24Hour), icon: 'weather-sunset-up' },
+        { key: 'dhuhr', name: t('prayerTimes.prayers.dhuhr'), time: formatTime(prayerTimes.dhuhr, use24Hour), icon: 'weather-sunny' },
+        { key: 'asr', name: t('prayerTimes.prayers.asr'), time: formatTime(prayerTimes.asr, use24Hour), icon: 'weather-sunset' },
+        { key: 'maghrib', name: t('prayerTimes.prayers.maghrib'), time: formatTime(prayerTimes.maghrib, use24Hour), icon: 'weather-sunset-down' },
+        { key: 'isha', name: t('prayerTimes.prayers.isha'), time: formatTime(prayerTimes.isha, use24Hour), icon: 'weather-night' },
     ] : [];
 
     const getNextPrayerKey = (prayerName: string) => {
@@ -94,7 +95,7 @@ export default function PrayerTimesScreen() {
     };
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['bottom', 'left', 'right']}>
             <Stack.Screen
                 options={{
                     title: t('common.prayerTimes'),
@@ -147,7 +148,7 @@ export default function PrayerTimesScreen() {
                                 <View style={[styles.nextPrayerContainer, { borderTopColor: colors.border }]}>
                                     <Text style={[styles.nextPrayerLabel, { color: colors.textMuted }]}>{t('prayerTimes.nextPrayer')}</Text>
                                     <Text style={[styles.nextPrayerNameHeader, { color: colors.nextPrayer }]}>{nextPrayer.name}</Text>
-                                    <Text style={[styles.nextPrayerTime, { color: colors.textPrimary }]}>{nextPrayer.time}</Text>
+                                    <Text style={[styles.nextPrayerTime, { color: colors.textPrimary }]}>{formatTime(nextPrayer.time, use24Hour)}</Text>
                                     {timeUntilNext && (
                                         <Text style={[styles.timeRemaining, { color: colors.textSecondary }]}>{timeUntilNext} {t('prayerTimes.remaining')}</Text>
                                     )}
@@ -196,7 +197,7 @@ export default function PrayerTimesScreen() {
                                                 </View>
                                                 <View style={styles.nextPrayerTimeContainer}>
                                                     <Text style={[styles.nextPrayerTimeCard, { color: statusColors.time }]}>
-                                                        {prayer.time}
+                                                        {formatTime(prayer.time, use24Hour)}
                                                     </Text>
                                                     <View style={[styles.nextPrayerBadge, { backgroundColor: statusColors.icon }]}>
                                                         <MaterialCommunityIcons name="bell-ring" size={18} color="#FFFFFF" />
@@ -236,7 +237,7 @@ export default function PrayerTimesScreen() {
                                             styles.prayerTime,
                                             { color: statusColors.time }
                                         ]}>
-                                            {prayer.time}
+                                            {formatTime(prayer.time, use24Hour)}
                                         </Text>
                                     </View>
                                 );
