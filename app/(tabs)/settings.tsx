@@ -425,7 +425,7 @@ export default function SettingsScreen() {
     );
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.sectionBackground }]} edges={['bottom', 'left', 'right']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.sectionBackground }]} edges={['left', 'right']}>
             <Stack.Screen
                 options={{
                     title: t('common.settings'),

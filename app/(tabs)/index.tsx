@@ -95,7 +95,7 @@ export default function PrayerTimesScreen() {
     };
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['bottom', 'left', 'right']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['left', 'right']}>
             <Stack.Screen
                 options={{
                     title: t('common.prayerTimes'),
