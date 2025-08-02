@@ -4,7 +4,7 @@
     "slug": "my-deen",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/Tinted.png",
     "scheme": "mydeen",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -52,10 +52,13 @@
     [
       "expo-splash-screen",
       {
+        "backgroundColor": "#000000",
         "image": "./assets/images/splash-icon.png",
         "imageWidth": 200,
-        "resizeMode": "contain",
-        "backgroundColor": "#ffffff"
+        "dark": {
+          "backgroundColor": "#ffffff",
+          "image": "./assets/images/splash-icon.png"
+        }
       }
     ],
     [

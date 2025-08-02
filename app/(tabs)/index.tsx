@@ -3,7 +3,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { formatTime } from '@/helper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,9 +12,17 @@ export default function PrayerTimesScreen() {
     const { t } = useTranslation();
     const { prayerTimes, loading, error, refreshPrayerTimes, getNextPrayer, getTimeUntilNext, use24Hour } = usePrayerTimes();
     const { colors, isDark } = useTheme();
+    const [refreshing, setRefreshing] = useState(false);
 
     const nextPrayer = getNextPrayer();
     const timeUntilNext = getTimeUntilNext();
+
+    // Manual refresh handler
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        await refreshPrayerTimes();
+        setRefreshing(false);
+    };
 
     const prayerList = prayerTimes ? [
         { key: 'fajr', name: t('prayerTimes.prayers.fajr'), time: formatTime(prayerTimes.fajr, use24Hour), icon: 'weather-night' },
@@ -111,8 +119,8 @@ export default function PrayerTimesScreen() {
                 contentContainerStyle={styles.scrollContent}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loading}
-                        onRefresh={refreshPrayerTimes}
+                        refreshing={refreshing}
+                        onRefresh={handleRefresh}
                         colors={[colors.primary]}
                         tintColor={colors.primary}
                     />
