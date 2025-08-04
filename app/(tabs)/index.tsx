@@ -61,11 +61,21 @@ export default function PrayerTimesScreen() {
 
         // Convert nextPrayer.name (Turkish) to key for comparison
         const nextPrayerKey = getNextPrayerKey(nextPrayer.name);
-        if (nextPrayerKey === prayerKey && !nextPrayer.isNextDay) {
+
+        // Check if this prayer is the next prayer
+        if (nextPrayerKey === prayerKey) {
             return 'next';
-        } else if (prayerMinutes > currentMinutes) {
-            return 'upcoming';
+        }
+
+        // For current day prayers only (don't show tomorrow's prayers as upcoming)
+        if (!nextPrayer.isNextDay) {
+            if (prayerMinutes > currentMinutes) {
+                return 'upcoming';
+            } else {
+                return 'passed';
+            }
         } else {
+            // If next prayer is tomorrow, all today's prayers are passed
             return 'passed';
         }
     };
@@ -170,7 +180,6 @@ export default function PrayerTimesScreen() {
                                 const status = getCurrentPrayerStatus(prayer.key);
                                 const statusColors = getStatusColors(status);
                                 const isNext = status === 'next';
-
                                 if (isNext) {
                                     return (
                                         <View key={prayer.key} style={[styles.nextPrayerWrapper, {

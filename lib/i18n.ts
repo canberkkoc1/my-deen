@@ -1,4 +1,4 @@
-import * as Localization from "expo-localization";
+import { getLocales } from "expo-localization";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
@@ -20,6 +20,9 @@ export const RTL_LANGUAGES = ["ar"];
 // RTL kontrol fonksiyonu (sadece bilgi amaçlı)
 export const isRTL = (language: string) => RTL_LANGUAGES.includes(language);
 
+// Cihaz dilini al
+const deviceLanguage = getLocales()[0]?.languageCode || "tr";
+
 // i18n yapılandırması
 i18n.use(initReactI18next).init({
   resources: {
@@ -27,7 +30,7 @@ i18n.use(initReactI18next).init({
     tr: { translation: tr },
     ar: { translation: ar },
   },
-  lng: Localization.locale.split("-")[0], // Cihaz dilini kullan
+  lng: deviceLanguage, // Cihaz dilini kullan
   fallbackLng: "tr", // Varsayılan dil
   interpolation: {
     escapeValue: false,

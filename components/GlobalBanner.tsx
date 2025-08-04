@@ -4,7 +4,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-3782077697240059/9019861463';
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-3782077697240059/9374905449';
 
 export const GlobalBanner = () => {
     const bannerRef = useRef<BannerAd>(null);
