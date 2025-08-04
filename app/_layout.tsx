@@ -10,7 +10,13 @@ import * as Notifications from 'expo-notifications';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import {
+  getTrackingPermissionsAsync,
+  PermissionStatus,
+  requestTrackingPermissionsAsync,
+} from 'expo-tracking-transparency';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import MobileAds from 'react-native-google-mobile-ads';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -74,8 +80,19 @@ export default function RootLayout() {
     // Initialize Google Mobile Ads after app is ready
     const initializeAds = async () => {
       try {
-        await MobileAds().initialize();
-        console.log('Google Mobile Ads initialized successfully');
+        // Request App Tracking Transparency authorization on iOS
+        if (Platform.OS === 'ios') {
+          const { status } = await getTrackingPermissionsAsync();
+          if (status === PermissionStatus.UNDETERMINED) {
+            await requestTrackingPermissionsAsync();
+          }
+        }
+
+        // Initialize the Google Mobile Ads SDK
+        const adapterStatuses = await MobileAds().initialize();
+
+        // Initialization complete!
+        console.log('Google Mobile Ads initialized successfully:', adapterStatuses);
       } catch (error) {
         console.error('Failed to initialize Google Mobile Ads:', error);
       }
