@@ -71,7 +71,19 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    MobileAds().initialize();
+    // Initialize Google Mobile Ads after app is ready
+    const initializeAds = async () => {
+      try {
+        await MobileAds().initialize();
+        console.log('Google Mobile Ads initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize Google Mobile Ads:', error);
+      }
+    };
+
+    // Delay initialization to ensure app is fully loaded
+    const timer = setTimeout(initializeAds, 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!loaded) {

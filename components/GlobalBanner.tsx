@@ -1,5 +1,5 @@
 import { useTheme } from '@/context/ThemeContext';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,12 +10,20 @@ export const GlobalBanner = () => {
     const bannerRef = useRef<BannerAd>(null);
     const insets = useSafeAreaInsets();
     const { colors, isDark } = useTheme();
+    const [adError, setAdError] = useState(false);
 
     // (iOS) WKWebView can terminate if app is in a "suspended state", resulting in an empty banner when app returns to foreground.
     // Therefore it's advised to "manually" request a new ad when the app is foregrounded
     useForeground(() => {
-        Platform.OS === 'ios' && bannerRef.current?.load();
+        if (!adError) {
+            Platform.OS === 'ios' && bannerRef.current?.load();
+        }
     });
+
+    // Don't render banner if there's an error
+    if (adError) {
+        return null;
+    }
 
     return (
         <View style={[
@@ -30,6 +38,14 @@ export const GlobalBanner = () => {
                 ref={bannerRef}
                 unitId={adUnitId}
                 size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+                onAdFailedToLoad={(error) => {
+                    console.warn('Banner ad failed to load:', error);
+                    setAdError(true);
+                }}
+                onAdLoaded={() => {
+                    console.log('Banner ad loaded successfully');
+                    setAdError(false);
+                }}
             />
         </View>
     );

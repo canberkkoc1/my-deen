@@ -7,7 +7,7 @@
     "icon": "./assets/images/Tinted.png",
     "scheme": "mydeen",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-3782077697240059~6068378967"
