@@ -71,8 +71,8 @@ export default function RootLayout() {
     );
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener);
-      Notifications.removeNotificationSubscription(responseListener);
+      notificationListener.remove()
+      responseListener.remove()
     };
   }, []);
 
