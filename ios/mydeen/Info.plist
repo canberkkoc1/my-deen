@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>my-deen</string>
+    <string>MyDeen</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>mydeen</string>
-          <string>com.dvcanberkkoc.mydeen</string>
+          <string>com.dvcanberkkoc.mydeenapp</string>
         </array>
       </dict>
       <dict>
@@ -297,6 +297,6 @@
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
     <key>aps-environment</key>
-    <string>development</string>
+    <string>production</string>
   </dict>
 </plist>

@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "mydeen.app"
-               BlueprintName = "mydeen"
-               ReferencedContainer = "container:mydeen.xcodeproj">
+               BuildableName = "MyDeen.app"
+               BlueprintName = "MyDeen"
+               ReferencedContainer = "container:MyDeen.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "mydeenTests.xctest"
-               BlueprintName = "mydeenTests"
-               ReferencedContainer = "container:mydeen.xcodeproj">
+               BuildableName = "MyDeenTests.xctest"
+               BlueprintName = "MyDeenTests"
+               ReferencedContainer = "container:MyDeen.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "mydeen.app"
-            BlueprintName = "mydeen"
-            ReferencedContainer = "container:mydeen.xcodeproj">
+            BuildableName = "MyDeen.app"
+            BlueprintName = "MyDeen"
+            ReferencedContainer = "container:MyDeen.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "mydeen.app"
-            BlueprintName = "mydeen"
-            ReferencedContainer = "container:mydeen.xcodeproj">
+            BuildableName = "MyDeen.app"
+            BlueprintName = "MyDeen"
+            ReferencedContainer = "container:MyDeen.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
