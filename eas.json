@@ -14,7 +14,12 @@
       "autoIncrement": true
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "channel": "production",
+      "distribution": "store",
+      "env": {
+        "NODE_ENV": "production"
+      }
     }
   },
   "submit": {
