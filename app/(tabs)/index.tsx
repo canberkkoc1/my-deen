@@ -1,3 +1,4 @@
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { usePrayerTimes } from '@/context/PrayerTimesContext';
 import { useTheme } from '@/context/ThemeContext';
 import { formatTime } from '@/helper';
@@ -5,7 +6,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PrayerTimesScreen() {
@@ -147,10 +148,7 @@ export default function PrayerTimesScreen() {
                 )}
 
                 {loading && !prayerTimes && (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={colors.primary} />
-                        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>{t('prayerTimes.loading')}</Text>
-                    </View>
+                    <LoadingScreen message={t('prayerTimes.loading')} showProgress={false} />
                 )}
 
                 {prayerTimes && (
@@ -294,14 +292,6 @@ const styles = StyleSheet.create({
         marginLeft: 8,
         fontSize: 14,
         flex: 1,
-    },
-    loadingContainer: {
-        alignItems: 'center',
-        paddingVertical: 40,
-    },
-    loadingText: {
-        marginTop: 12,
-        fontSize: 16,
     },
     headerCard: {
         borderRadius: 16,

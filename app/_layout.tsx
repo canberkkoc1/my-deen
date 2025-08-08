@@ -1,4 +1,5 @@
 import { GlobalBanner } from '@/components/GlobalBanner';
+import { LoadingProvider } from '@/context/LoadingContext';
 import { LocationProvider } from '@/context/LocationContext';
 import { PrayerTimesProvider } from '@/context/PrayerTimesContext';
 import { ThemeProvider as CustomThemeProvider, useTheme } from '@/context/ThemeContext';
@@ -15,7 +16,7 @@ import {
   PermissionStatus,
   requestTrackingPermissionsAsync,
 } from 'expo-tracking-transparency';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import MobileAds from 'react-native-google-mobile-ads';
 import 'react-native-reanimated';
@@ -48,22 +49,77 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+  const [appReady, setAppReady] = useState(false);
 
+  // Keep splash screen visible until app is ready
   useEffect(() => {
-    SplashScreen.hideAsync();
-  }, []);
+    async function prepare() {
+      try {
+        // Wait for fonts to load
+        if (!loaded) return;
 
+        // Add a small delay to ensure smooth transition
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        setAppReady(true);
+      } catch (e) {
+        console.warn('App preparation failed:', e);
+        setAppReady(true);
+      }
+    }
+
+    prepare();
+  }, [loaded]);
+
+  // Hide splash screen when app is ready
   useEffect(() => {
-    registerPushToken();
+    if (appReady) {
+      SplashScreen.hideAsync();
+    }
+  }, [appReady]);
 
-    // Notification received listener
+  // Defer heavy initialization until after app is visible
+  useEffect(() => {
+    if (!appReady) return;
+
+    // Initialize services in background after app is ready
+    const initializeServices = async () => {
+      try {
+        // Register push notifications (non-blocking)
+        registerPushToken().catch(err => console.warn('Push token registration failed:', err));
+
+        // Initialize Google Mobile Ads (non-blocking)
+        setTimeout(async () => {
+          try {
+            if (Platform.OS === 'ios') {
+              const { status } = await getTrackingPermissionsAsync();
+              if (status === PermissionStatus.UNDETERMINED) {
+                await requestTrackingPermissionsAsync();
+              }
+            }
+
+            const adapterStatuses = await MobileAds().initialize();
+            console.log('Google Mobile Ads initialized successfully:', adapterStatuses);
+          } catch (error) {
+            console.error('Failed to initialize Google Mobile Ads:', error);
+          }
+        }, 2000); // Delay ads initialization
+      } catch (error) {
+        console.error('Service initialization failed:', error);
+      }
+    };
+
+    initializeServices();
+  }, [appReady]);
+
+  // Setup notification listeners
+  useEffect(() => {
     const notificationListener = Notifications.addNotificationReceivedListener(
       (notification) => {
         console.log('📱 Notification received:', notification);
       }
     );
 
-    // Notification response listener (when user taps notification)
     const responseListener = Notifications.addNotificationResponseReceivedListener(
       (response) => {
         console.log('👆 Notification tapped:', response);
@@ -71,57 +127,32 @@ export default function RootLayout() {
     );
 
     return () => {
-      notificationListener.remove()
-      responseListener.remove()
+      notificationListener.remove();
+      responseListener.remove();
     };
   }, []);
 
-  useEffect(() => {
-    // Initialize Google Mobile Ads after app is ready
-    const initializeAds = async () => {
-      try {
-        // Request App Tracking Transparency authorization on iOS
-        if (Platform.OS === 'ios') {
-          const { status } = await getTrackingPermissionsAsync();
-          if (status === PermissionStatus.UNDETERMINED) {
-            await requestTrackingPermissionsAsync();
-          }
-        }
-
-        // Initialize the Google Mobile Ads SDK
-        const adapterStatuses = await MobileAds().initialize();
-
-        // Initialization complete!
-        console.log('Google Mobile Ads initialized successfully:', adapterStatuses);
-      } catch (error) {
-        console.error('Failed to initialize Google Mobile Ads:', error);
-      }
-    };
-
-    // Delay initialization to ensure app is fully loaded
-    const timer = setTimeout(initializeAds, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!loaded) {
-    // Async font loading only occurs in development.
+  if (!appReady) {
+    // Show nothing while app is preparing - splash screen will be visible
     return null;
   }
 
   return (
     <SafeAreaProvider>
       <CustomThemeProvider>
-        <LocationProvider>
-          <PrayerTimesProvider>
-            <NavigationThemeWrapper>
-              <GlobalBanner />
-              <Stack screenOptions={{ headerShown: false, }}>
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-            </NavigationThemeWrapper>
-          </PrayerTimesProvider>
-        </LocationProvider>
+        <LoadingProvider>
+          <LocationProvider>
+            <PrayerTimesProvider>
+              <NavigationThemeWrapper>
+                <GlobalBanner />
+                <Stack screenOptions={{ headerShown: false, }}>
+                  <Stack.Screen name="(tabs)" />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+              </NavigationThemeWrapper>
+            </PrayerTimesProvider>
+          </LocationProvider>
+        </LoadingProvider>
       </CustomThemeProvider>
     </SafeAreaProvider>
   );

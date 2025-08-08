@@ -119,7 +119,12 @@ export function PrayerTimesProvider({ children }: PrayerTimesProviderProps) {
     // Effect to fetch prayer times when location changes
     useEffect(() => {
         if (latitude && longitude && !locationLoading) {
-            fetchPrayerTimes();
+            // Add small delay to avoid blocking UI
+            const timer = setTimeout(() => {
+                fetchPrayerTimes();
+            }, 500);
+
+            return () => clearTimeout(timer);
         }
     }, [latitude, longitude, locationLoading]);
 

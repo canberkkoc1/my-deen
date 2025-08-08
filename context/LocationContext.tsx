@@ -98,7 +98,12 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     };
 
     useEffect(() => {
-        requestLocationPermission();
+        // Delay location permission request to not block app startup
+        const timer = setTimeout(() => {
+            requestLocationPermission();
+        }, 1000); // Start location request after 1 second
+
+        return () => clearTimeout(timer);
     }, []);
 
     const value = {
