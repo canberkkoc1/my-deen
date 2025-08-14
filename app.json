@@ -120,8 +120,8 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow Muslimly to use your location.",
-          "locationWhenInUsePermission": "Allow Muslimly to use your location."
+          "locationAlwaysAndWhenInUsePermission": "Muslimly uses your location to calculate accurate prayer times for your area and determine the Qibla direction for prayers. This ensures you receive prayer notifications at the correct times based on your geographic location.",
+          "locationWhenInUsePermission": "Muslimly uses your location to calculate accurate prayer times for your area and determine the Qibla direction for prayers. This ensures you receive prayer notifications at the correct times based on your geographic location."
         }
       ],
       "expo-tracking-transparency"

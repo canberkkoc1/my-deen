@@ -58,11 +58,11 @@
       <true/>
     </dict>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Allow Muslimly to use your location.</string>
+    <string>Muslimly uses your location to calculate accurate prayer times for your area and determine the Qibla direction for prayers. This ensures you receive prayer notifications at the correct times based on your geographic location.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your location</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Allow Muslimly to use your location.</string>
+    <string>Muslimly uses your location to calculate accurate prayer times for your area and determine the Qibla direction for prayers. This ensures you receive prayer notifications at the correct times based on your geographic location.</string>
     <key>NSMotionUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your device motion</string>
     <key>NSUserActivityTypes</key>
