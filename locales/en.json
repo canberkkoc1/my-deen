@@ -106,5 +106,14 @@
     "app": {
         "title": "App Information",
         "version": "Version"
+    },
+    "preload": {
+        "initializing": "Initializing...",
+        "loadingTheme": "Loading theme settings...",
+        "loadingLanguage": "Loading language settings...",
+        "loadingCalculation": "Loading calculation method...",
+        "loadingTimeFormat": "Loading time format...",
+        "clearingCache": "Clearing cache...",
+        "ready": "Ready!"
     }
 }

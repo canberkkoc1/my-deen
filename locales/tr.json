@@ -106,5 +106,14 @@
     "app": {
         "title": "Uygulama Bilgileri",
         "version": "Versiyon"
+    },
+    "preload": {
+        "initializing": "Başlatılıyor...",
+        "loadingTheme": "Tema ayarları yükleniyor...",
+        "loadingLanguage": "Dil ayarları yükleniyor...",
+        "loadingCalculation": "Hesaplama metodu yükleniyor...",
+        "loadingTimeFormat": "Zaman formatı yükleniyor...",
+        "clearingCache": "Cache temizleniyor...",
+        "ready": "Hazır!"
     }
 }

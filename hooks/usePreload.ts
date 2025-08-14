@@ -1,6 +1,7 @@
 import { debug } from "@/lib/debug";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface PreloadState {
   isPreloaded: boolean;
@@ -9,21 +10,22 @@ interface PreloadState {
 }
 
 export function usePreload() {
+  const { t } = useTranslation();
   const [preloadState, setPreloadState] = useState<PreloadState>({
     isPreloaded: false,
     progress: 0,
-    currentTask: "Başlatılıyor...",
+    currentTask: t("preload.initializing"),
   });
 
   useEffect(() => {
     const preloadData = async () => {
       try {
         const tasks = [
-          { name: "Tema ayarları yükleniyor...", weight: 20 },
-          { name: "Dil ayarları yükleniyor...", weight: 20 },
-          { name: "Hesaplama metodu yükleniyor...", weight: 20 },
-          { name: "Zaman formatı yükleniyor...", weight: 20 },
-          { name: "Cache temizleniyor...", weight: 20 },
+          { name: t("preload.loadingTheme"), weight: 20 },
+          { name: t("preload.loadingLanguage"), weight: 20 },
+          { name: t("preload.loadingCalculation"), weight: 20 },
+          { name: t("preload.loadingTimeFormat"), weight: 20 },
+          { name: t("preload.clearingCache"), weight: 20 },
         ];
 
         let totalProgress = 0;
@@ -56,7 +58,7 @@ export function usePreload() {
           ...prev,
           isPreloaded: true,
           progress: 100,
-          currentTask: "Hazır!",
+          currentTask: t("preload.ready"),
         }));
 
         debug.log("Preload completed successfully");
@@ -67,13 +69,13 @@ export function usePreload() {
           ...prev,
           isPreloaded: true,
           progress: 100,
-          currentTask: "Hazır!",
+          currentTask: t("preload.ready"),
         }));
       }
     };
 
     preloadData();
-  }, []);
+  }, [t]);
 
   return preloadState;
 }

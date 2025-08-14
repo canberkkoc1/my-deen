@@ -100,5 +100,14 @@
     "app": {
         "title": "معلومات التطبيق",
         "version": "الإصدار"
+    },
+    "preload": {
+        "initializing": "جاري التهيئة...",
+        "loadingTheme": "جاري تحميل إعدادات المظهر...",
+        "loadingLanguage": "جاري تحميل إعدادات اللغة...",
+        "loadingCalculation": "جاري تحميل طريقة الحساب...",
+        "loadingTimeFormat": "جاري تحميل تنسيق الوقت...",
+        "clearingCache": "جاري مسح التخزين المؤقت...",
+        "ready": "جاهز!"
     }
 }
