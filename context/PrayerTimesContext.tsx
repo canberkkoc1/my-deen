@@ -10,7 +10,7 @@ interface PrayerTimesContextType {
     loading: boolean;
     error: string | null;
     refreshPrayerTimes: () => Promise<void>;
-    getNextPrayer: () => { name: string; time: string; isNextDay: boolean } | null;
+    getNextPrayer: () => { key: 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha'; name: string; time: string; isNextDay: boolean } | null;
     getTimeUntilNext: () => string | null;
     use24Hour: boolean;
     setUse24Hour: (value: boolean) => void;

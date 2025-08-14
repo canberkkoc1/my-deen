@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mydeenapp",
+    "name": "Muslimly",
     "slug": "my-deen",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -120,8 +120,8 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow $(MyDeen) to use your location.",
-          "locationWhenInUsePermission": "Allow $(MyDeen) to use your location."
+          "locationAlwaysAndWhenInUsePermission": "Allow Muslimly to use your location.",
+          "locationWhenInUsePermission": "Allow Muslimly to use your location."
         }
       ],
       "expo-tracking-transparency"

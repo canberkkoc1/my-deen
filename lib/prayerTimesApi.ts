@@ -292,6 +292,7 @@ export class PrayerTimesApi {
    * Get next prayer time
    */
   public getNextPrayerTime(prayerTimes: SimplePrayerTimes): {
+    key: "fajr" | "sunrise" | "dhuhr" | "asr" | "maghrib" | "isha";
     name: string;
     time: string;
     isNextDay: boolean;
@@ -300,12 +301,12 @@ export class PrayerTimesApi {
     const currentTime = now.getHours() * 60 + now.getMinutes();
 
     const prayers = [
-      { name: "İmsak", time: prayerTimes.fajr, key: "fajr" },
-      { name: "Güneş", time: prayerTimes.sunrise, key: "sunrise" },
-      { name: "Öğle", time: prayerTimes.dhuhr, key: "dhuhr" },
-      { name: "İkindi", time: prayerTimes.asr, key: "asr" },
-      { name: "Akşam", time: prayerTimes.maghrib, key: "maghrib" },
-      { name: "Yatsı", time: prayerTimes.isha, key: "isha" },
+      { key: "fajr" as const, name: "İmsak", time: prayerTimes.fajr },
+      { key: "sunrise" as const, name: "Güneş", time: prayerTimes.sunrise },
+      { key: "dhuhr" as const, name: "Öğle", time: prayerTimes.dhuhr },
+      { key: "asr" as const, name: "İkindi", time: prayerTimes.asr },
+      { key: "maghrib" as const, name: "Akşam", time: prayerTimes.maghrib },
+      { key: "isha" as const, name: "Yatsı", time: prayerTimes.isha },
     ];
 
     for (const prayer of prayers) {
@@ -313,12 +314,22 @@ export class PrayerTimesApi {
       const prayerTime = hours * 60 + minutes;
 
       if (prayerTime > currentTime) {
-        return { name: prayer.name, time: prayer.time, isNextDay: false };
+        return {
+          key: prayer.key,
+          name: prayer.name,
+          time: prayer.time,
+          isNextDay: false,
+        };
       }
     }
 
     // If no prayer left today, return first prayer of tomorrow
-    return { name: "İmsak", time: prayerTimes.fajr, isNextDay: true };
+    return {
+      key: "fajr",
+      name: "İmsak",
+      time: prayerTimes.fajr,
+      isNextDay: true,
+    };
   }
 
   /**

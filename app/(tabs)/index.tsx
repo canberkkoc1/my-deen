@@ -34,18 +34,21 @@ export default function PrayerTimesScreen() {
         { key: 'isha', name: t('prayerTimes.prayers.isha'), time: formatTime(prayerTimes.isha, use24Hour), icon: 'weather-night' },
     ] : [];
 
-    const getNextPrayerKey = (prayerName: string) => {
-        // Map Turkish prayer names from API to prayer keys
+    const getNextPrayerKey = (prayerNameOrKey: string) => {
+        // Already a key? return as is
+        const knownKeys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+        if (knownKeys.includes(prayerNameOrKey)) return prayerNameOrKey;
+
+        // Backward-compat Turkish names mapping
         const turkishToKeyMap: { [key: string]: string } = {
             'İmsak': 'fajr',
             'Güneş': 'sunrise',
             'Öğle': 'dhuhr',
             'İkindi': 'asr',
             'Akşam': 'maghrib',
-            'Yatsı': 'isha'
+            'Yatsı': 'isha',
         };
-
-        return turkishToKeyMap[prayerName] || '';
+        return turkishToKeyMap[prayerNameOrKey] || '';
     };
 
     const getCurrentPrayerStatus = (prayerKey: string) => {
@@ -163,7 +166,9 @@ export default function PrayerTimesScreen() {
                             {nextPrayer && (
                                 <View style={[styles.nextPrayerContainer, { borderTopColor: colors.border }]}>
                                     <Text style={[styles.nextPrayerLabel, { color: colors.textMuted }]}>{t('prayerTimes.nextPrayer')}</Text>
-                                    <Text style={[styles.nextPrayerNameHeader, { color: colors.nextPrayer }]}>{nextPrayer.name}</Text>
+                                    <Text style={[styles.nextPrayerNameHeader, { color: colors.nextPrayer }]}>
+                                        {t(`prayerTimes.prayers.${getNextPrayerKey((nextPrayer as any).key ?? nextPrayer.name)}`)}
+                                    </Text>
                                     <Text style={[styles.nextPrayerTime, { color: colors.textPrimary }]}>{formatTime(nextPrayer.time, use24Hour)}</Text>
                                     {timeUntilNext && (
                                         <Text style={[styles.timeRemaining, { color: colors.textSecondary }]}>{timeUntilNext} {t('prayerTimes.remaining')}</Text>
@@ -206,7 +211,7 @@ export default function PrayerTimesScreen() {
                                                             {t('prayerTimes.nextPrayer')}
                                                         </Text>
                                                         <Text style={[styles.nextPrayerNameCard, { color: statusColors.text }]}>
-                                                            {prayer.name}
+                                                            {t(`prayerTimes.prayers.${prayer.key}`)}
                                                         </Text>
                                                     </View>
                                                 </View>
@@ -241,11 +246,13 @@ export default function PrayerTimesScreen() {
                                                 size={24}
                                                 color={statusColors.icon}
                                             />
-                                            <Text style={[
-                                                styles.prayerName,
-                                                { color: statusColors.text }
-                                            ]}>
-                                                {prayer.name}
+                                            <Text
+                                                style={[
+                                                    styles.prayerName,
+                                                    { color: statusColors.text },
+                                                ]}
+                                            >
+                                                {t(`prayerTimes.prayers.${prayer.key}`)}
                                             </Text>
                                         </View>
                                         <Text style={[
