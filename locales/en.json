@@ -58,7 +58,8 @@
         "selectDesc": "Change application language",
         "turkish": "Türkçe",
         "english": "English",
-        "arabic": "العربية"
+        "arabic": "العربية",
+        "thai": "ไทย"
     },
     "location": {
         "permissionTitle": "Location Permission",

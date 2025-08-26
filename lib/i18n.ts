@@ -5,6 +5,7 @@ import { initReactI18next } from "react-i18next";
 // Dil dosyalarını içe aktar
 import ar from "../locales/ar.json";
 import en from "../locales/en.json";
+import th from "../locales/th.json";
 import tr from "../locales/tr.json";
 
 // Desteklenen diller
@@ -12,6 +13,7 @@ export const SUPPORTED_LANGUAGES = {
   en: "English",
   tr: "Türkçe",
   ar: "العربية",
+  th: "ไทย",
 };
 
 // RTL dilleri (sadece bilgi amaçlı)
@@ -29,6 +31,7 @@ i18n.use(initReactI18next).init({
     en: { translation: en },
     tr: { translation: tr },
     ar: { translation: ar },
+    th: { translation: th },
   },
   lng: deviceLanguage, // Cihaz dilini kullan
   fallbackLng: "tr", // Varsayılan dil

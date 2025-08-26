@@ -418,6 +418,34 @@ export default function SettingsScreen() {
                                 />
                             )}
                         </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.methodItem,
+                                { backgroundColor: colors.surface },
+                                i18n.language === 'th' && { borderColor: colors.primary },
+                            ]}
+                            onPress={() => handleLanguageChange('th')}
+                        >
+                            <View style={[styles.methodIcon, { backgroundColor: colors.background }]}>
+                                <MaterialCommunityIcons
+                                    name="translate"
+                                    size={28}
+                                    color={i18n.language === 'th' ? colors.primary : colors.textMuted}
+                                />
+                            </View>
+                            <View style={styles.methodInfo}>
+                                <Text style={[styles.methodName, { color: colors.textPrimary }]}>{t('language.thai')}</Text>
+                            </View>
+                            {i18n.language === 'th' && (
+                                <MaterialCommunityIcons
+                                    name="check-circle"
+                                    size={24}
+                                    color={colors.primary}
+                                    style={styles.checkIcon}
+                                />
+                            )}
+                        </TouchableOpacity>
                     </ScrollView>
                 </View>
             </View>
@@ -512,7 +540,10 @@ export default function SettingsScreen() {
                             </View>
                             <View style={styles.methodSelector}>
                                 <Text style={[styles.selectedMethod, { color: colors.primary }]}>
-                                    {i18n.language === 'tr' ? t('language.turkish') : i18n.language === 'ar' ? t('language.arabic') : t('language.english')}
+                                    {i18n.language === 'tr' ? t('language.turkish') :
+                                        i18n.language === 'ar' ? t('language.arabic') :
+                                            i18n.language === 'th' ? t('language.thai') :
+                                                t('language.english')}
                                 </Text>
                                 <MaterialCommunityIcons
                                     name="chevron-right"

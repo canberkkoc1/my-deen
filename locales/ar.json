@@ -52,7 +52,8 @@
         "selectDesc": "تغيير لغة التطبيق",
         "turkish": "Türkçe",
         "english": "English",
-        "arabic": "العربية"
+        "arabic": "العربية",
+        "thai": "ไทย"
     },
     "location": {
         "permissionTitle": "إذن الموقع",

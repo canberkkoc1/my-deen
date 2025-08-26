@@ -58,7 +58,8 @@
         "selectDesc": "Uygulama dilini değiştir",
         "turkish": "Türkçe",
         "english": "English",
-        "arabic": "العربية"
+        "arabic": "العربية",
+        "thai": "ไทย"
     },
     "location": {
         "permissionTitle": "Konum İzni",
