@@ -1,41 +1,54 @@
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { usePrayerTimes } from '@/context/PrayerTimesContext';
 import { useTheme } from '@/context/ThemeContext';
+import { formatTime } from '@/helper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PrayerTimesScreen() {
     const { t } = useTranslation();
-    const { prayerTimes, loading, error, refreshPrayerTimes, getNextPrayer, getTimeUntilNext } = usePrayerTimes();
+    const { prayerTimes, loading, error, refreshPrayerTimes, getNextPrayer, getTimeUntilNext, use24Hour } = usePrayerTimes();
     const { colors, isDark } = useTheme();
+    const [refreshing, setRefreshing] = useState(false);
 
     const nextPrayer = getNextPrayer();
     const timeUntilNext = getTimeUntilNext();
 
+    // Manual refresh handler
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        await refreshPrayerTimes();
+        setRefreshing(false);
+    };
+
     const prayerList = prayerTimes ? [
-        { key: 'fajr', name: t('prayerTimes.prayers.fajr'), time: prayerTimes.fajr, icon: 'weather-night' },
-        { key: 'sunrise', name: t('prayerTimes.prayers.sunrise'), time: prayerTimes.sunrise, icon: 'weather-sunset-up' },
-        { key: 'dhuhr', name: t('prayerTimes.prayers.dhuhr'), time: prayerTimes.dhuhr, icon: 'weather-sunny' },
-        { key: 'asr', name: t('prayerTimes.prayers.asr'), time: prayerTimes.asr, icon: 'weather-sunset' },
-        { key: 'maghrib', name: t('prayerTimes.prayers.maghrib'), time: prayerTimes.maghrib, icon: 'weather-sunset-down' },
-        { key: 'isha', name: t('prayerTimes.prayers.isha'), time: prayerTimes.isha, icon: 'weather-night' },
+        { key: 'fajr', name: t('prayerTimes.prayers.fajr'), time: formatTime(prayerTimes.fajr, use24Hour), icon: 'weather-night' },
+        { key: 'sunrise', name: t('prayerTimes.prayers.sunrise'), time: formatTime(prayerTimes.sunrise, use24Hour), icon: 'weather-sunset-up' },
+        { key: 'dhuhr', name: t('prayerTimes.prayers.dhuhr'), time: formatTime(prayerTimes.dhuhr, use24Hour), icon: 'weather-sunny' },
+        { key: 'asr', name: t('prayerTimes.prayers.asr'), time: formatTime(prayerTimes.asr, use24Hour), icon: 'weather-sunset' },
+        { key: 'maghrib', name: t('prayerTimes.prayers.maghrib'), time: formatTime(prayerTimes.maghrib, use24Hour), icon: 'weather-sunset-down' },
+        { key: 'isha', name: t('prayerTimes.prayers.isha'), time: formatTime(prayerTimes.isha, use24Hour), icon: 'weather-night' },
     ] : [];
 
-    const getNextPrayerKey = (prayerName: string) => {
-        // Map Turkish prayer names from API to prayer keys
+    const getNextPrayerKey = (prayerNameOrKey: string) => {
+        // Already a key? return as is
+        const knownKeys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+        if (knownKeys.includes(prayerNameOrKey)) return prayerNameOrKey;
+
+        // Backward-compat Turkish names mapping
         const turkishToKeyMap: { [key: string]: string } = {
             'İmsak': 'fajr',
             'Güneş': 'sunrise',
             'Öğle': 'dhuhr',
             'İkindi': 'asr',
             'Akşam': 'maghrib',
-            'Yatsı': 'isha'
+            'Yatsı': 'isha',
         };
-
-        return turkishToKeyMap[prayerName] || '';
+        return turkishToKeyMap[prayerNameOrKey] || '';
     };
 
     const getCurrentPrayerStatus = (prayerKey: string) => {
@@ -52,11 +65,21 @@ export default function PrayerTimesScreen() {
 
         // Convert nextPrayer.name (Turkish) to key for comparison
         const nextPrayerKey = getNextPrayerKey(nextPrayer.name);
-        if (nextPrayerKey === prayerKey && !nextPrayer.isNextDay) {
+
+        // Check if this prayer is the next prayer
+        if (nextPrayerKey === prayerKey) {
             return 'next';
-        } else if (prayerMinutes > currentMinutes) {
-            return 'upcoming';
+        }
+
+        // For current day prayers only (don't show tomorrow's prayers as upcoming)
+        if (!nextPrayer.isNextDay) {
+            if (prayerMinutes > currentMinutes) {
+                return 'upcoming';
+            } else {
+                return 'passed';
+            }
         } else {
+            // If next prayer is tomorrow, all today's prayers are passed
             return 'passed';
         }
     };
@@ -94,7 +117,7 @@ export default function PrayerTimesScreen() {
     };
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['left', 'right']}>
             <Stack.Screen
                 options={{
                     title: t('common.prayerTimes'),
@@ -110,8 +133,8 @@ export default function PrayerTimesScreen() {
                 contentContainerStyle={styles.scrollContent}
                 refreshControl={
                     <RefreshControl
-                        refreshing={loading}
-                        onRefresh={refreshPrayerTimes}
+                        refreshing={refreshing}
+                        onRefresh={handleRefresh}
                         colors={[colors.primary]}
                         tintColor={colors.primary}
                     />
@@ -128,10 +151,7 @@ export default function PrayerTimesScreen() {
                 )}
 
                 {loading && !prayerTimes && (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={colors.primary} />
-                        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>{t('prayerTimes.loading')}</Text>
-                    </View>
+                    <LoadingScreen message={t('prayerTimes.loading')} showProgress={false} />
                 )}
 
                 {prayerTimes && (
@@ -146,8 +166,10 @@ export default function PrayerTimesScreen() {
                             {nextPrayer && (
                                 <View style={[styles.nextPrayerContainer, { borderTopColor: colors.border }]}>
                                     <Text style={[styles.nextPrayerLabel, { color: colors.textMuted }]}>{t('prayerTimes.nextPrayer')}</Text>
-                                    <Text style={[styles.nextPrayerNameHeader, { color: colors.nextPrayer }]}>{nextPrayer.name}</Text>
-                                    <Text style={[styles.nextPrayerTime, { color: colors.textPrimary }]}>{nextPrayer.time}</Text>
+                                    <Text style={[styles.nextPrayerNameHeader, { color: colors.nextPrayer }]}>
+                                        {t(`prayerTimes.prayers.${getNextPrayerKey((nextPrayer as any).key ?? nextPrayer.name)}`)}
+                                    </Text>
+                                    <Text style={[styles.nextPrayerTime, { color: colors.textPrimary }]}>{formatTime(nextPrayer.time, use24Hour)}</Text>
                                     {timeUntilNext && (
                                         <Text style={[styles.timeRemaining, { color: colors.textSecondary }]}>{timeUntilNext} {t('prayerTimes.remaining')}</Text>
                                     )}
@@ -161,7 +183,6 @@ export default function PrayerTimesScreen() {
                                 const status = getCurrentPrayerStatus(prayer.key);
                                 const statusColors = getStatusColors(status);
                                 const isNext = status === 'next';
-
                                 if (isNext) {
                                     return (
                                         <View key={prayer.key} style={[styles.nextPrayerWrapper, {
@@ -190,13 +211,13 @@ export default function PrayerTimesScreen() {
                                                             {t('prayerTimes.nextPrayer')}
                                                         </Text>
                                                         <Text style={[styles.nextPrayerNameCard, { color: statusColors.text }]}>
-                                                            {prayer.name}
+                                                            {t(`prayerTimes.prayers.${prayer.key}`)}
                                                         </Text>
                                                     </View>
                                                 </View>
                                                 <View style={styles.nextPrayerTimeContainer}>
                                                     <Text style={[styles.nextPrayerTimeCard, { color: statusColors.time }]}>
-                                                        {prayer.time}
+                                                        {formatTime(prayer.time, use24Hour)}
                                                     </Text>
                                                     <View style={[styles.nextPrayerBadge, { backgroundColor: statusColors.icon }]}>
                                                         <MaterialCommunityIcons name="bell-ring" size={18} color="#FFFFFF" />
@@ -225,18 +246,20 @@ export default function PrayerTimesScreen() {
                                                 size={24}
                                                 color={statusColors.icon}
                                             />
-                                            <Text style={[
-                                                styles.prayerName,
-                                                { color: statusColors.text }
-                                            ]}>
-                                                {prayer.name}
+                                            <Text
+                                                style={[
+                                                    styles.prayerName,
+                                                    { color: statusColors.text },
+                                                ]}
+                                            >
+                                                {t(`prayerTimes.prayers.${prayer.key}`)}
                                             </Text>
                                         </View>
                                         <Text style={[
                                             styles.prayerTime,
                                             { color: statusColors.time }
                                         ]}>
-                                            {prayer.time}
+                                            {formatTime(prayer.time, use24Hour)}
                                         </Text>
                                     </View>
                                 );
@@ -262,6 +285,7 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         padding: 20,
+        paddingTop: 0,
     },
     errorContainer: {
         flexDirection: 'row',
@@ -275,14 +299,6 @@ const styles = StyleSheet.create({
         marginLeft: 8,
         fontSize: 14,
         flex: 1,
-    },
-    loadingContainer: {
-        alignItems: 'center',
-        paddingVertical: 40,
-    },
-    loadingText: {
-        marginTop: 12,
-        fontSize: 16,
     },
     headerCard: {
         borderRadius: 16,

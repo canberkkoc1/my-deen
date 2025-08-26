@@ -2,19 +2,21 @@ import { CALCULATION_METHODS } from '@/constants';
 import { useLocation } from '@/context/LocationContext';
 import { usePrayerTimes } from '@/context/PrayerTimesContext';
 import { useTheme } from '@/context/ThemeContext';
+import { registerPushToken } from '@/service/registerPushNot';
 import { SettingSection } from '@/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import { Stack } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SettingsScreen() {
     const { t, i18n } = useTranslation();
     const { requestLocationPermission } = useLocation();
-    const { refreshPrayerTimes } = usePrayerTimes();
+    const { refreshPrayerTimes, use24Hour, setUse24Hour } = usePrayerTimes();
     const { isDark, setThemeMode, colors } = useTheme();
     const [modalVisible, setModalVisible] = useState(false);
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
@@ -34,7 +36,7 @@ export default function SettingsScreen() {
                     title: t('prayerTimes.use24Hour'),
                     description: t('prayerTimes.use24HourDesc'),
                     type: 'switch',
-                    value: true,
+                    value: use24Hour,
                 },
             ],
         },
@@ -74,10 +76,32 @@ export default function SettingsScreen() {
         const loadSettings = async () => {
             try {
                 const storedMethodId = await AsyncStorage.getItem('calculationMethod');
-                if (storedMethodId !== null) {
+                const notificationsEnabled = await AsyncStorage.getItem('notificationsEnabled');
+                const notificationSound = await AsyncStorage.getItem('notificationSound');
+
+                if (storedMethodId !== null || notificationsEnabled !== null || notificationSound !== null) {
                     setSettings(currentSettings => {
                         const newSettings = [...currentSettings];
-                        newSettings[0].items[0].value = JSON.parse(storedMethodId);
+
+                        // Calculation method
+                        if (storedMethodId !== null) {
+                            newSettings[0].items[0].value = JSON.parse(storedMethodId);
+                        }
+
+                        // Notifications enabled
+                        if (notificationsEnabled !== null) {
+                            newSettings[1].items[0].value = JSON.parse(notificationsEnabled);
+                        } else {
+                            newSettings[1].items[0].value = false; // Default: false
+                        }
+
+                        // Notification sound
+                        if (notificationSound !== null) {
+                            newSettings[1].items[1].value = JSON.parse(notificationSound);
+                        } else {
+                            newSettings[1].items[1].value = true; // Default: true
+                        }
+
                         return newSettings;
                     });
                 }
@@ -106,7 +130,7 @@ export default function SettingsScreen() {
                         title: t('prayerTimes.use24Hour'),
                         description: t('prayerTimes.use24HourDesc'),
                         type: 'switch',
-                        value: settings[0]?.items[1]?.value || true,
+                        value: use24Hour,
                     },
                 ],
             },
@@ -158,6 +182,67 @@ export default function SettingsScreen() {
                 console.error('Calculation method could not be saved:', error);
             }
             setModalVisible(false);
+        }
+
+        // 24 saat formatı ayarı
+        if (sectionIndex === 0 && itemIndex === 1) {
+            await setUse24Hour(newValue as boolean);
+        }
+
+        // Notification settings
+        if (sectionIndex === 1) {
+            try {
+                if (itemIndex === 0) {
+                    // Prayer time notifications toggle
+                    await AsyncStorage.setItem('notificationsEnabled', JSON.stringify(newValue));
+
+                    if (newValue) {
+                        // Notifications açıldı - izin kontrolü yap
+                        const { status } = await Notifications.getPermissionsAsync();
+                        if (status !== 'granted') {
+                            const { status: newStatus } = await Notifications.requestPermissionsAsync();
+                            if (newStatus !== 'granted') {
+                                Alert.alert(
+                                    t('notifications.permissionRequired'),
+                                    t('notifications.permissionRequiredDesc'),
+                                    [
+                                        { text: t('common.cancel'), style: 'cancel' },
+                                        {
+                                            text: t('common.settings'),
+                                            onPress: () => Linking.openSettings()
+                                        }
+                                    ]
+                                );
+                                // İzin verilmediyse ayarı geri değiştir
+                                newSettings[sectionIndex].items[itemIndex].value = false;
+                                setSettings([...newSettings]);
+                                await AsyncStorage.setItem('notificationsEnabled', JSON.stringify(false));
+                                return;
+                            }
+                        }
+
+                        // İzin varsa push token'ı yeniden kaydet
+                        await registerPushToken();
+
+                        Alert.alert(
+                            t('notifications.enabled'),
+                            t('notifications.enabledDesc')
+                        );
+                    } else {
+                        // Notifications kapatıldı, token'ı güncelleyelim
+                        await registerPushToken();
+                        Alert.alert(
+                            t('notifications.disabled'),
+                            t('notifications.disabledDesc')
+                        );
+                    }
+                } else if (itemIndex === 1) {
+                    // Notification sound toggle
+                    await AsyncStorage.setItem('notificationSound', JSON.stringify(newValue));
+                }
+            } catch (error) {
+                console.error('Notification setting could not be saved:', error);
+            }
         }
 
         // Dark theme değişikliği
@@ -333,6 +418,34 @@ export default function SettingsScreen() {
                                 />
                             )}
                         </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.methodItem,
+                                { backgroundColor: colors.surface },
+                                i18n.language === 'th' && { borderColor: colors.primary },
+                            ]}
+                            onPress={() => handleLanguageChange('th')}
+                        >
+                            <View style={[styles.methodIcon, { backgroundColor: colors.background }]}>
+                                <MaterialCommunityIcons
+                                    name="translate"
+                                    size={28}
+                                    color={i18n.language === 'th' ? colors.primary : colors.textMuted}
+                                />
+                            </View>
+                            <View style={styles.methodInfo}>
+                                <Text style={[styles.methodName, { color: colors.textPrimary }]}>{t('language.thai')}</Text>
+                            </View>
+                            {i18n.language === 'th' && (
+                                <MaterialCommunityIcons
+                                    name="check-circle"
+                                    size={24}
+                                    color={colors.primary}
+                                    style={styles.checkIcon}
+                                />
+                            )}
+                        </TouchableOpacity>
                     </ScrollView>
                 </View>
             </View>
@@ -340,7 +453,7 @@ export default function SettingsScreen() {
     );
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.sectionBackground }]} edges={['top']}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.sectionBackground }]} edges={['left', 'right']}>
             <Stack.Screen
                 options={{
                     title: t('common.settings'),
@@ -427,7 +540,10 @@ export default function SettingsScreen() {
                             </View>
                             <View style={styles.methodSelector}>
                                 <Text style={[styles.selectedMethod, { color: colors.primary }]}>
-                                    {i18n.language === 'tr' ? t('language.turkish') : i18n.language === 'ar' ? t('language.arabic') : t('language.english')}
+                                    {i18n.language === 'tr' ? t('language.turkish') :
+                                        i18n.language === 'ar' ? t('language.arabic') :
+                                            i18n.language === 'th' ? t('language.thai') :
+                                                t('language.english')}
                                 </Text>
                                 <MaterialCommunityIcons
                                     name="chevron-right"

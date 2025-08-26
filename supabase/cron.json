@@ -1,0 +1,12 @@
+[
+    {
+        "name": "schedule-prayer-notifications",
+        "schedule": "0 0 * * *",
+        "command": "schedule-prayer-notifications"
+    },
+    {
+        "name": "send-prayer-notifications",
+        "schedule": "* * * * *",
+        "command": "send-prayer-notifications"
+    }
+]

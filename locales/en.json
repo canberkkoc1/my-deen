@@ -34,7 +34,13 @@
         "prayerTimeNotifications": "Prayer Time Notifications",
         "prayerTimeNotificationsDesc": "Receive notifications for each prayer time",
         "notificationSound": "Notification Sound",
-        "notificationSoundDesc": "Play sound for notifications"
+        "notificationSoundDesc": "Play sound for notifications",
+        "permissionRequired": "Notification Permission Required",
+        "permissionRequiredDesc": "Please enable notification permission in settings to receive prayer time notifications.",
+        "enabled": "Notifications Enabled",
+        "enabledDesc": "You will now receive notifications 15 minutes before prayer times.",
+        "disabled": "Notifications Disabled",
+        "disabledDesc": "Prayer time notifications will no longer be sent."
     },
     "appearance": {
         "title": "Appearance",
@@ -52,7 +58,8 @@
         "selectDesc": "Change application language",
         "turkish": "Türkçe",
         "english": "English",
-        "arabic": "العربية"
+        "arabic": "العربية",
+        "thai": "ไทย"
     },
     "location": {
         "permissionTitle": "Location Permission",
@@ -100,5 +107,14 @@
     "app": {
         "title": "App Information",
         "version": "Version"
+    },
+    "preload": {
+        "initializing": "Initializing...",
+        "loadingTheme": "Loading theme settings...",
+        "loadingLanguage": "Loading language settings...",
+        "loadingCalculation": "Loading calculation method...",
+        "loadingTimeFormat": "Loading time format...",
+        "clearingCache": "Clearing cache...",
+        "ready": "Ready!"
     }
 }

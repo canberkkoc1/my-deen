@@ -1,0 +1,120 @@
+{
+    "common": {
+        "settings": "การตั้งค่า",
+        "version": "เวอร์ชัน",
+        "prayerTimes": "เวลาละหมาด",
+        "loading": "กำลังโหลด...",
+        "error": "เกิดข้อผิดพลาด",
+        "retry": "ลองใหม่",
+        "ok": "ตกลง",
+        "cancel": "ยกเลิก"
+    },
+    "prayerTimes": {
+        "title": "เวลาละหมาด",
+        "calculationMethod": "วิธีการคำนวณ",
+        "calculationMethodDesc": "เลือกวิธีการคำนวณเวลาละหมาด",
+        "selectCalculationMethod": "เลือกวิธีการคำนวณ",
+        "use24Hour": "รูปแบบ 24 ชั่วโมง",
+        "use24HourDesc": "แสดงเวลาในรูปแบบ 24 ชั่วโมง",
+        "loading": "กำลังโหลดเวลาละหมาด...",
+        "nextPrayer": "ละหมาดถัดไป",
+        "remaining": "เหลืออีก",
+        "methodInfo": "วิธีการคำนวณ: {{method}}",
+        "prayers": {
+            "fajr": "ฟัจร์",
+            "sunrise": "พระอาทิตย์ขึ้น",
+            "dhuhr": "ซุห์ร",
+            "asr": "อัศร์",
+            "maghrib": "มัฆริบ",
+            "isha": "อิชา"
+        }
+    },
+    "notifications": {
+        "title": "การแจ้งเตือน",
+        "prayerTimeNotifications": "การแจ้งเตือนเวลาละหมาด",
+        "prayerTimeNotificationsDesc": "รับการแจ้งเตือนสำหรับเวลาละหมาดแต่ละครั้ง",
+        "notificationSound": "เสียงแจ้งเตือน",
+        "notificationSoundDesc": "เล่นเสียงสำหรับการแจ้งเตือน",
+        "permissionRequired": "ต้องการสิทธิ์การแจ้งเตือน",
+        "permissionRequiredDesc": "กรุณาเปิดใช้งานสิทธิ์การแจ้งเตือนในการตั้งค่าเพื่อรับการแจ้งเตือนเวลาละหมาด",
+        "enabled": "เปิดใช้งานการแจ้งเตือนแล้ว",
+        "enabledDesc": "ตอนนี้คุณจะได้รับการแจ้งเตือน 15 นาทีก่อนเวลาละหมาด",
+        "disabled": "ปิดการแจ้งเตือนแล้ว",
+        "disabledDesc": "จะไม่ส่งการแจ้งเตือนเวลาละหมาดอีกต่อไป"
+    },
+    "appearance": {
+        "title": "รูปลักษณ์",
+        "darkTheme": "ธีมมืด",
+        "darkThemeDesc": "ใช้ธีมมืดในแอป",
+        "theme": "ธีม",
+        "themeDesc": "เลือกธีมของแอปพลิเคชัน",
+        "light": "สว่าง",
+        "dark": "มืด",
+        "system": "ระบบ"
+    },
+    "language": {
+        "title": "ภาษา",
+        "select": "เลือกภาษา",
+        "selectDesc": "เปลี่ยนภาษาของแอปพลิเคชัน",
+        "turkish": "ภาษาตุรกี",
+        "english": "ภาษาอังกฤษ",
+        "arabic": "ภาษาอาหรับ",
+        "thai": "ภาษาไทย"
+    },
+    "location": {
+        "permissionTitle": "สิทธิ์การเข้าถึงตำแหน่ง",
+        "permissionMessage": "เราต้องการสิทธิ์การเข้าถึงตำแหน่งเพื่อแสดงเวลาละหมาดสำหรับตำแหน่งของคุณ กรุณาเปิดใช้งานสิทธิ์การเข้าถึงตำแหน่งในการตั้งค่าระบบ",
+        "goToSettings": "ไปที่การตั้งค่า",
+        "cancel": "ยกเลิก",
+        "usingMecca": "เวลาละหมาดถูกตั้งค่าตามตารางเวลาของเมกกะเนื่องจากไม่ได้รับสิทธิ์การเข้าถึงตำแหน่ง",
+        "ok": "ตกลง"
+    },
+    "qibla": {
+        "title": "เข็มทิศกิบละห์",
+        "calibrate": "ปรับเทียบ",
+        "accuracy": "ความแม่นยำ",
+        "accuracyHigh": "ความแม่นยำสูง",
+        "accuracyMedium": "ความแม่นยำปานกลาง",
+        "accuracyLow": "ความแม่นยำต่ำ",
+        "accuracyUnreliable": "กำลังปรับเทียบ",
+        "direction": "ทิศกิบละห์",
+        "calibrating": "เข็มทิศกำลังปรับเทียบ...",
+        "noPermission": "ต้องการสิทธิ์",
+        "noPermissionDesc": "ต้องการสิทธิ์การเข้าถึงตำแหน่งเพื่อให้เข็มทิศทำงานได้",
+        "loading": "กำลังหาตำแหน่ง...",
+        "distance": "ระยะทาง",
+        "bearing": "ทิศทาง",
+        "deviceHeading": "ทิศทางอุปกรณ์",
+        "qiblaHeading": "ทิศทางกิบละห์",
+        "debug": "ข้อมูลดีบัก",
+        "compassUnavailable": "ข้อผิดพลาด",
+        "compassUnavailableDesc": "ไม่สามารถเริ่มต้นเข็มทิศได้ เซ็นเซอร์เข็มทิศของอุปกรณ์ของคุณอาจไม่ทำงาน",
+        "instructions": "ถือโทรศัพท์ของคุณให้เรียบและติดตามทิศทางกิบละห์",
+        "statusPerfect": "🎯 สมบูรณ์แบบ! พบทิศทางกิบละห์แล้ว",
+        "statusExcellent": "✅ ยอดเยี่ยม! ใกล้กิบละห์มาก",
+        "statusGood": "🔄 ดี! ใกล้กิบละห์มากขึ้น",
+        "statusSearching": "🧭 หมุนเพื่อหาทิศทางกิบละห์",
+        "angleDifference": "{{difference}}° ต่างจากทิศทางอุปกรณ์",
+        "location": "ตำแหน่ง:",
+        "device": "อุปกรณ์:",
+        "qiblaLabel": "กิบละห์"
+    },
+    "navigation": {
+        "prayerTimes": "เวลาละหมาด",
+        "qibla": "กิบละห์",
+        "settings": "การตั้งค่า"
+    },
+    "app": {
+        "title": "ข้อมูลแอป",
+        "version": "เวอร์ชัน"
+    },
+    "preload": {
+        "initializing": "กำลังเริ่มต้น...",
+        "loadingTheme": "กำลังโหลดการตั้งค่าธีม...",
+        "loadingLanguage": "กำลังโหลดการตั้งค่าภาษา...",
+        "loadingCalculation": "กำลังโหลดวิธีการคำนวณ...",
+        "loadingTimeFormat": "กำลังโหลดรูปแบบเวลา...",
+        "clearingCache": "กำลังล้างแคช...",
+        "ready": "พร้อมแล้ว!"
+    }
+}

@@ -248,7 +248,7 @@ export default function QiblaScreen() {
     const accuracyInfo = getAccuracyInfo();
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: themeColors.gradientColors[0] }]}>
+        <SafeAreaView style={[styles.container, { backgroundColor: themeColors.gradientColors[0] }]} edges={['bottom', 'left', 'right']}>
             <Stack.Screen options={{ title: t('navigation.qibla'), headerShown: false }} />
 
             {/* Background */}
@@ -467,14 +467,14 @@ export default function QiblaScreen() {
             </View>
 
             {/* Debug Info (Development only) */}
-            {__DEV__ && (
+            {/*  {__DEV__ && (
                 <View style={[styles.debugPanel, { backgroundColor: colors.overlay }]}>
                     <Text style={[styles.debugTitle, { color: themeColors.primaryText }]}>{t('qibla.debug')}</Text>
                     <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>{t('qibla.location')} {latitude?.toFixed(4)}, {longitude?.toFixed(4)}</Text>
                     <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>{t('qibla.device')} {deviceHeading.toFixed(1)}° | {t('qibla.qiblaLabel')}: {qiblaDirection.toFixed(1)}°</Text>
                     <Text style={[styles.debugText, { color: themeColors.secondaryText }]}>{t('qibla.angleDifference', { difference: angleDifference.toFixed(1) })} | {t('qibla.accuracy')}: {accuracy}</Text>
                 </View>
-            )}
+            )} */}
         </SafeAreaView>
     );
 }
@@ -496,7 +496,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 24,
         paddingTop: Platform.OS === 'android' ? 20 : 0,
-        paddingBottom: 20,
+        paddingBottom: 10,
+        marginBottom: 10,
     },
     title: {
         fontSize: 28,
@@ -528,6 +529,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
+        marginBottom: 30,
     },
     compassBase: {
         shadowColor: '#000',
@@ -570,7 +572,7 @@ const styles = StyleSheet.create({
     },
     bottomPanel: {
         paddingHorizontal: 24,
-        paddingBottom: 30,
+        paddingBottom: 0,
     },
     statusCard: {
         borderRadius: 16,

@@ -68,10 +68,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         isDark,
     };
 
-    // Don't render children until theme is loaded
-    if (isLoading) {
-        return null;
-    }
+    // Use default theme while loading to avoid blocking
+    // This prevents the entire app from being blocked during theme loading
 
     return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
