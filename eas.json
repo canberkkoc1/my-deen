@@ -18,7 +18,8 @@
       "channel": "production",
       "distribution": "store",
       "env": {
-        "NODE_ENV": "production"
+        "NODE_ENV": "production",
+        "EXPO_USE_COMMUNITY_AUTOLINKING": "1"
       }
     }
   },
