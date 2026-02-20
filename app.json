@@ -125,7 +125,8 @@
           "locationWhenInUsePermission": "Muslimly uses your location to calculate accurate prayer times for your area and determine the Qibla direction for prayers. This ensures you receive prayer notifications at the correct times based on your geographic location."
         }
       ],
-      "expo-tracking-transparency"
+      "expo-tracking-transparency",
+      "./plugins/withAgpVersion"
     ],
     "extra": {
       "eas": {
