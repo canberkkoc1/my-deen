@@ -296,8 +296,8 @@ export default function SettingsScreen() {
                                     />
                                 </View>
                                 <View style={styles.methodInfo}>
-                                    <Text style={[styles.methodName, { color: colors.textPrimary }]}>{method.name}</Text>
-                                    <Text style={[styles.methodDescription, { color: colors.textSecondary }]}>{method.description}</Text>
+                                    <Text style={[styles.methodName, { color: colors.textPrimary }]}>{t(`prayerTimes.calculationMethods.${method.key}.name`)}</Text>
+                                    <Text style={[styles.methodDescription, { color: colors.textSecondary }]}>{t(`prayerTimes.calculationMethods.${method.key}.description`)}</Text>
                                 </View>
                                 {settings[0].items[0].value === method.id && (
                                     <MaterialCommunityIcons
@@ -506,7 +506,10 @@ export default function SettingsScreen() {
                                                 onPress={() => setModalVisible(true)}
                                             >
                                                 <Text style={[styles.selectedMethod, { color: colors.primary }]}>
-                                                    {CALCULATION_METHODS.find(m => m.id === item.value)?.name}
+                                                    {(() => {
+                                                        const method = CALCULATION_METHODS.find(m => m.id === item.value);
+                                                        return method ? t(`prayerTimes.calculationMethods.${method.key}.name`) : '';
+                                                    })()}
                                                 </Text>
                                                 <MaterialCommunityIcons
                                                     name="chevron-right"

@@ -1,456 +1,657 @@
-import { LoadingScreen } from '@/components/LoadingScreen';
-import { usePrayerTimes } from '@/context/PrayerTimesContext';
-import { useTheme } from '@/context/ThemeContext';
-import { formatTime } from '@/helper';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Stack } from 'expo-router';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { LoadingScreen } from "@/components/LoadingScreen";
+import { usePrayerTimes } from "@/context/PrayerTimesContext";
+import { useTheme } from "@/context/ThemeContext";
+import { formatTime } from "@/helper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Stack } from "expo-router";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+    Platform,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PrayerTimesScreen() {
-    const { t } = useTranslation();
-    const { prayerTimes, loading, error, refreshPrayerTimes, getNextPrayer, getTimeUntilNext, use24Hour } = usePrayerTimes();
-    const { colors, isDark } = useTheme();
-    const [refreshing, setRefreshing] = useState(false);
+  const { t } = useTranslation();
+  const {
+    prayerTimes,
+    loading,
+    error,
+    refreshPrayerTimes,
+    getNextPrayer,
+    getTimeUntilNext,
+    use24Hour,
+  } = usePrayerTimes();
+  const { colors, isDark } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
 
-    const nextPrayer = getNextPrayer();
-    const timeUntilNext = getTimeUntilNext();
+  const nextPrayer = getNextPrayer();
+  const timeUntilNext = getTimeUntilNext();
 
-    // Manual refresh handler
-    const handleRefresh = async () => {
-        setRefreshing(true);
-        await refreshPrayerTimes();
-        setRefreshing(false);
+  // Manual refresh handler
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refreshPrayerTimes();
+    setRefreshing(false);
+  };
+
+  const prayerList = prayerTimes
+    ? [
+        {
+          key: "fajr",
+          name: t("prayerTimes.prayers.fajr"),
+          time: formatTime(prayerTimes.fajr, use24Hour),
+          icon: "weather-night",
+        },
+        {
+          key: "sunrise",
+          name: t("prayerTimes.prayers.sunrise"),
+          time: formatTime(prayerTimes.sunrise, use24Hour),
+          icon: "weather-sunset-up",
+        },
+        {
+          key: "dhuhr",
+          name: t("prayerTimes.prayers.dhuhr"),
+          time: formatTime(prayerTimes.dhuhr, use24Hour),
+          icon: "weather-sunny",
+        },
+        {
+          key: "asr",
+          name: t("prayerTimes.prayers.asr"),
+          time: formatTime(prayerTimes.asr, use24Hour),
+          icon: "weather-sunset",
+        },
+        {
+          key: "maghrib",
+          name: t("prayerTimes.prayers.maghrib"),
+          time: formatTime(prayerTimes.maghrib, use24Hour),
+          icon: "weather-sunset-down",
+        },
+        {
+          key: "isha",
+          name: t("prayerTimes.prayers.isha"),
+          time: formatTime(prayerTimes.isha, use24Hour),
+          icon: "weather-night",
+        },
+      ]
+    : [];
+
+  const getNextPrayerKey = (prayerNameOrKey: string) => {
+    // Already a key? return as is
+    const knownKeys = ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"];
+    if (knownKeys.includes(prayerNameOrKey)) return prayerNameOrKey;
+
+    // Backward-compat Turkish names mapping
+    const turkishToKeyMap: { [key: string]: string } = {
+      İmsak: "fajr",
+      Güneş: "sunrise",
+      Öğle: "dhuhr",
+      İkindi: "asr",
+      Akşam: "maghrib",
+      Yatsı: "isha",
     };
+    return turkishToKeyMap[prayerNameOrKey] || "";
+  };
 
-    const prayerList = prayerTimes ? [
-        { key: 'fajr', name: t('prayerTimes.prayers.fajr'), time: formatTime(prayerTimes.fajr, use24Hour), icon: 'weather-night' },
-        { key: 'sunrise', name: t('prayerTimes.prayers.sunrise'), time: formatTime(prayerTimes.sunrise, use24Hour), icon: 'weather-sunset-up' },
-        { key: 'dhuhr', name: t('prayerTimes.prayers.dhuhr'), time: formatTime(prayerTimes.dhuhr, use24Hour), icon: 'weather-sunny' },
-        { key: 'asr', name: t('prayerTimes.prayers.asr'), time: formatTime(prayerTimes.asr, use24Hour), icon: 'weather-sunset' },
-        { key: 'maghrib', name: t('prayerTimes.prayers.maghrib'), time: formatTime(prayerTimes.maghrib, use24Hour), icon: 'weather-sunset-down' },
-        { key: 'isha', name: t('prayerTimes.prayers.isha'), time: formatTime(prayerTimes.isha, use24Hour), icon: 'weather-night' },
-    ] : [];
+  const getCurrentPrayerStatus = (prayerKey: string) => {
+    if (!nextPrayer) return "passed";
 
-    const getNextPrayerKey = (prayerNameOrKey: string) => {
-        // Already a key? return as is
-        const knownKeys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
-        if (knownKeys.includes(prayerNameOrKey)) return prayerNameOrKey;
+    const currentTime = new Date();
+    const currentMinutes =
+      currentTime.getHours() * 60 + currentTime.getMinutes();
 
-        // Backward-compat Turkish names mapping
-        const turkishToKeyMap: { [key: string]: string } = {
-            'İmsak': 'fajr',
-            'Güneş': 'sunrise',
-            'Öğle': 'dhuhr',
-            'İkindi': 'asr',
-            'Akşam': 'maghrib',
-            'Yatsı': 'isha',
+    const prayerTime = prayerList.find((p) => p.key === prayerKey)?.time;
+    if (!prayerTime) return "passed";
+
+    const [hours, minutes] = prayerTime.split(":").map(Number);
+    const prayerMinutes = hours * 60 + minutes;
+
+    // Convert nextPrayer.name (Turkish) to key for comparison
+    const nextPrayerKey = getNextPrayerKey(nextPrayer.name);
+
+    // Check if this prayer is the next prayer
+    if (nextPrayerKey === prayerKey) {
+      return "next";
+    }
+
+    // For current day prayers only (don't show tomorrow's prayers as upcoming)
+    if (!nextPrayer.isNextDay) {
+      if (prayerMinutes > currentMinutes) {
+        return "upcoming";
+      } else {
+        return "passed";
+      }
+    } else {
+      // If next prayer is tomorrow, all today's prayers are passed
+      return "passed";
+    }
+  };
+
+  const getStatusColors = (status: string) => {
+    switch (status) {
+      case "next":
+        // On Android: subtler background and border for a cleaner card look
+        const nextCardBg =
+          Platform.OS === "android"
+            ? isDark
+              ? colors.primary + "25"
+              : colors.primary + "18"
+            : isDark
+              ? colors.primary + "20"
+              : colors.primary + "15";
+        const nextBorder =
+          Platform.OS === "android"
+            ? colors.primary + "55"
+            : colors.primary;
+        return {
+          cardBg: nextCardBg,
+          border: nextBorder,
+          icon: colors.primary,
+          text: colors.primary,
+          time: colors.primary,
+          shadowColor: colors.primary,
         };
-        return turkishToKeyMap[prayerNameOrKey] || '';
-    };
+      case "passed":
+        return {
+          cardBg: colors.surface,
+          border: colors.border,
+          icon: colors.textMuted,
+          text: colors.textMuted,
+          time: colors.textMuted,
+          shadowColor: colors.shadow,
+        };
+      default: // upcoming
+        return {
+          cardBg: colors.surface,
+          border: colors.border,
+          icon: colors.textSecondary,
+          text: colors.textSecondary,
+          time: colors.textPrimary,
+          shadowColor: colors.shadow,
+        };
+    }
+  };
 
-    const getCurrentPrayerStatus = (prayerKey: string) => {
-        if (!nextPrayer) return 'passed';
+  return (
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={["left", "right"]}
+    >
+      <Stack.Screen
+        options={{
+          title: t("common.prayerTimes"),
+          headerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTintColor: colors.textPrimary,
+          headerShadowVisible: false,
+        }}
+      />
 
-        const currentTime = new Date();
-        const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
-
-        const prayerTime = prayerList.find(p => p.key === prayerKey)?.time;
-        if (!prayerTime) return 'passed';
-
-        const [hours, minutes] = prayerTime.split(':').map(Number);
-        const prayerMinutes = hours * 60 + minutes;
-
-        // Convert nextPrayer.name (Turkish) to key for comparison
-        const nextPrayerKey = getNextPrayerKey(nextPrayer.name);
-
-        // Check if this prayer is the next prayer
-        if (nextPrayerKey === prayerKey) {
-            return 'next';
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+          />
         }
-
-        // For current day prayers only (don't show tomorrow's prayers as upcoming)
-        if (!nextPrayer.isNextDay) {
-            if (prayerMinutes > currentMinutes) {
-                return 'upcoming';
-            } else {
-                return 'passed';
-            }
-        } else {
-            // If next prayer is tomorrow, all today's prayers are passed
-            return 'passed';
-        }
-    };
-
-    const getStatusColors = (status: string) => {
-        switch (status) {
-            case 'next':
-                return {
-                    cardBg: isDark ? colors.primary + '20' : colors.primary + '15',
-                    border: colors.primary,
-                    icon: colors.primary,
-                    text: colors.primary,
-                    time: colors.primary,
-                    shadowColor: colors.primary,
-                };
-            case 'passed':
-                return {
-                    cardBg: colors.surface,
-                    border: colors.border,
-                    icon: colors.textMuted,
-                    text: colors.textMuted,
-                    time: colors.textMuted,
-                    shadowColor: colors.shadow,
-                };
-            default: // upcoming
-                return {
-                    cardBg: colors.surface,
-                    border: colors.border,
-                    icon: colors.textSecondary,
-                    text: colors.textSecondary,
-                    time: colors.textPrimary,
-                    shadowColor: colors.shadow,
-                };
-        }
-    };
-
-    return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['left', 'right']}>
-            <Stack.Screen
-                options={{
-                    title: t('common.prayerTimes'),
-                    headerStyle: {
-                        backgroundColor: colors.background,
-                    },
-                    headerTintColor: colors.textPrimary,
-                    headerShadowVisible: false,
-                }}
+      >
+        {error && (
+          <View
+            style={[
+              styles.errorContainer,
+              {
+                backgroundColor: colors.error + "15",
+                borderColor: colors.error + "40",
+              },
+            ]}
+          >
+            <MaterialCommunityIcons
+              name="alert-circle"
+              size={24}
+              color={colors.error}
             />
+            <Text style={[styles.errorText, { color: colors.error }]}>
+              {error}
+            </Text>
+          </View>
+        )}
 
-            <ScrollView
-                contentContainerStyle={styles.scrollContent}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={handleRefresh}
-                        colors={[colors.primary]}
-                        tintColor={colors.primary}
-                    />
-                }
+        {loading && !prayerTimes && (
+          <LoadingScreen
+            message={t("prayerTimes.loading")}
+            showProgress={false}
+          />
+        )}
+
+        {prayerTimes && (
+          <>
+            {/* Date and Next Prayer Info */}
+            <View
+              style={[styles.headerCard, { backgroundColor: colors.surface }]}
             >
-                {error && (
-                    <View style={[styles.errorContainer, {
-                        backgroundColor: colors.error + '15',
-                        borderColor: colors.error + '40'
-                    }]}>
-                        <MaterialCommunityIcons name="alert-circle" size={24} color={colors.error} />
-                        <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
-                    </View>
-                )}
+              <View style={styles.dateContainer}>
+                <Text
+                  style={[styles.gregorianDate, { color: colors.textPrimary }]}
+                >
+                  {prayerTimes.date}
+                </Text>
+                <Text
+                  style={[styles.hijriDate, { color: colors.textSecondary }]}
+                >
+                  {prayerTimes.hijriDate}
+                </Text>
+              </View>
 
-                {loading && !prayerTimes && (
-                    <LoadingScreen message={t('prayerTimes.loading')} showProgress={false} />
-                )}
+              {nextPrayer && (
+                <View
+                  style={[
+                    styles.nextPrayerContainer,
+                    { borderTopColor: colors.border },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.nextPrayerLabel,
+                      { color: colors.textMuted },
+                    ]}
+                  >
+                    {t("prayerTimes.nextPrayer")}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.nextPrayerNameHeader,
+                      { color: colors.nextPrayer },
+                    ]}
+                  >
+                    {t(
+                      `prayerTimes.prayers.${getNextPrayerKey((nextPrayer as any).key ?? nextPrayer.name)}`,
+                    )}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.nextPrayerTime,
+                      { color: colors.textPrimary },
+                    ]}
+                  >
+                    {formatTime(nextPrayer.time, use24Hour)}
+                  </Text>
+                  {timeUntilNext && (
+                    <Text
+                      style={[
+                        styles.timeRemaining,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
+                      {timeUntilNext} {t("prayerTimes.remaining")}
+                    </Text>
+                  )}
+                </View>
+              )}
+            </View>
 
-                {prayerTimes && (
-                    <>
-                        {/* Date and Next Prayer Info */}
-                        <View style={[styles.headerCard, { backgroundColor: colors.surface }]}>
-                            <View style={styles.dateContainer}>
-                                <Text style={[styles.gregorianDate, { color: colors.textPrimary }]}>{prayerTimes.date}</Text>
-                                <Text style={[styles.hijriDate, { color: colors.textSecondary }]}>{prayerTimes.hijriDate}</Text>
-                            </View>
-
-                            {nextPrayer && (
-                                <View style={[styles.nextPrayerContainer, { borderTopColor: colors.border }]}>
-                                    <Text style={[styles.nextPrayerLabel, { color: colors.textMuted }]}>{t('prayerTimes.nextPrayer')}</Text>
-                                    <Text style={[styles.nextPrayerNameHeader, { color: colors.nextPrayer }]}>
-                                        {t(`prayerTimes.prayers.${getNextPrayerKey((nextPrayer as any).key ?? nextPrayer.name)}`)}
-                                    </Text>
-                                    <Text style={[styles.nextPrayerTime, { color: colors.textPrimary }]}>{formatTime(nextPrayer.time, use24Hour)}</Text>
-                                    {timeUntilNext && (
-                                        <Text style={[styles.timeRemaining, { color: colors.textSecondary }]}>{timeUntilNext} {t('prayerTimes.remaining')}</Text>
-                                    )}
-                                </View>
-                            )}
-                        </View>
-
-                        {/* Prayer Times List */}
-                        <View style={styles.prayerTimesContainer}>
-                            {prayerList.map((prayer, index) => {
-                                const status = getCurrentPrayerStatus(prayer.key);
-                                const statusColors = getStatusColors(status);
-                                const isNext = status === 'next';
-                                if (isNext) {
-                                    return (
-                                        <View key={prayer.key} style={[styles.nextPrayerWrapper, {
-                                            backgroundColor: statusColors.cardBg,
-                                            borderColor: statusColors.border,
-                                            shadowColor: statusColors.shadowColor,
-                                            shadowOffset: { width: 0, height: 8 },
-                                            shadowOpacity: 0.4,
-                                            shadowRadius: 16,
-                                            elevation: 12,
-                                        }]}>
-                                            <View style={styles.nextPrayerContent}>
-                                                <View style={styles.nextPrayerMain}>
-                                                    <View style={[styles.nextPrayerIconContainer, {
-                                                        backgroundColor: statusColors.icon + '15',
-                                                        borderColor: statusColors.icon + '30',
-                                                    }]}>
-                                                        <MaterialCommunityIcons
-                                                            name={prayer.icon as any}
-                                                            size={36}
-                                                            color={statusColors.icon}
-                                                        />
-                                                    </View>
-                                                    <View style={styles.nextPrayerInfo}>
-                                                        <Text style={[styles.nextPrayerLabelCard, { color: statusColors.text }]}>
-                                                            {t('prayerTimes.nextPrayer')}
-                                                        </Text>
-                                                        <Text style={[styles.nextPrayerNameCard, { color: statusColors.text }]}>
-                                                            {t(`prayerTimes.prayers.${prayer.key}`)}
-                                                        </Text>
-                                                    </View>
-                                                </View>
-                                                <View style={styles.nextPrayerTimeContainer}>
-                                                    <Text style={[styles.nextPrayerTimeCard, { color: statusColors.time }]}>
-                                                        {formatTime(prayer.time, use24Hour)}
-                                                    </Text>
-                                                    <View style={[styles.nextPrayerBadge, { backgroundColor: statusColors.icon }]}>
-                                                        <MaterialCommunityIcons name="bell-ring" size={18} color="#FFFFFF" />
-                                                    </View>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    );
-                                }
-
-                                return (
-                                    <View
-                                        key={prayer.key}
-                                        style={[
-                                            styles.prayerCard,
-                                            {
-                                                backgroundColor: statusColors.cardBg,
-                                                borderColor: statusColors.border,
-                                                borderWidth: 1,
-                                            }
-                                        ]}
-                                    >
-                                        <View style={styles.prayerInfo}>
-                                            <MaterialCommunityIcons
-                                                name={prayer.icon as any}
-                                                size={24}
-                                                color={statusColors.icon}
-                                            />
-                                            <Text
-                                                style={[
-                                                    styles.prayerName,
-                                                    { color: statusColors.text },
-                                                ]}
-                                            >
-                                                {t(`prayerTimes.prayers.${prayer.key}`)}
-                                            </Text>
-                                        </View>
-                                        <Text style={[
-                                            styles.prayerTime,
-                                            { color: statusColors.time }
-                                        ]}>
-                                            {formatTime(prayer.time, use24Hour)}
-                                        </Text>
-                                    </View>
-                                );
-                            })}
-                        </View>
-
-                        {/* Method Info */}
-                        <View style={[styles.methodContainer, { backgroundColor: colors.surface }]}>
-                            <Text style={[styles.methodText, { color: colors.textTertiary }]}>
-                                {t('prayerTimes.methodInfo', { method: prayerTimes.method.name })}
+            {/* Prayer Times List */}
+            <View style={styles.prayerTimesContainer}>
+              {prayerList.map((prayer, index) => {
+                const status = getCurrentPrayerStatus(prayer.key);
+                const statusColors = getStatusColors(status);
+                const isNext = status === "next";
+                if (isNext) {
+                  const isAndroid = Platform.OS === "android";
+                  return (
+                    <View
+                      key={prayer.key}
+                      style={[
+                        styles.nextPrayerWrapper,
+                        isAndroid && styles.nextPrayerWrapperAndroid,
+                        {
+                          backgroundColor: statusColors.cardBg,
+                          borderColor: statusColors.border,
+                          borderWidth: isAndroid ? 1.5 : 3,
+                          shadowColor: statusColors.shadowColor,
+                          shadowOffset: { width: 0, height: isAndroid ? 2 : 8 },
+                          shadowOpacity: isAndroid ? 0.08 : 0.4,
+                          shadowRadius: isAndroid ? 6 : 16,
+                          elevation: isAndroid ? 3 : 12,
+                        },
+                      ]}
+                    >
+                      <View style={styles.nextPrayerContent}>
+                        <View style={styles.nextPrayerMain}>
+                          <View
+                            style={[
+                              styles.nextPrayerIconContainer,
+                              isAndroid && styles.nextPrayerIconContainerAndroid,
+                              {
+                                backgroundColor: statusColors.icon + "15",
+                                borderColor: statusColors.icon + "30",
+                              },
+                            ]}
+                          >
+                            <MaterialCommunityIcons
+                              name={prayer.icon as any}
+                              size={isAndroid ? 28 : 36}
+                              color={statusColors.icon}
+                            />
+                          </View>
+                          <View style={styles.nextPrayerInfo}>
+                            <Text
+                              style={[
+                                styles.nextPrayerLabelCard,
+                                isAndroid && styles.nextPrayerLabelCardAndroid,
+                                { color: statusColors.text },
+                              ]}
+                            >
+                              {t("prayerTimes.nextPrayer")}
                             </Text>
+                            <Text
+                              style={[
+                                styles.nextPrayerNameCard,
+                                isAndroid && styles.nextPrayerNameCardAndroid,
+                                { color: statusColors.text },
+                              ]}
+                            >
+                              {t(`prayerTimes.prayers.${prayer.key}`)}
+                            </Text>
+                          </View>
                         </View>
-                    </>
-                )}
-            </ScrollView>
-        </SafeAreaView>
-    );
+                        <View style={styles.nextPrayerTimeContainer}>
+                          <Text
+                            style={[
+                              styles.nextPrayerTimeCard,
+                              isAndroid && styles.nextPrayerTimeCardAndroid,
+                              { color: statusColors.time },
+                            ]}
+                          >
+                            {formatTime(prayer.time, use24Hour)}
+                          </Text>
+                          <View
+                            style={[
+                              styles.nextPrayerBadge,
+                              isAndroid && styles.nextPrayerBadgeAndroid,
+                              { backgroundColor: statusColors.icon },
+                            ]}
+                          >
+                            <MaterialCommunityIcons
+                              name="bell-ring"
+                              size={isAndroid ? 16 : 18}
+                              color="#FFFFFF"
+                            />
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  );
+                }
+
+                return (
+                  <View
+                    key={prayer.key}
+                    style={[
+                      styles.prayerCard,
+                      {
+                        backgroundColor: statusColors.cardBg,
+                        borderColor: statusColors.border,
+                        borderWidth: 1,
+                      },
+                    ]}
+                  >
+                    <View style={styles.prayerInfo}>
+                      <MaterialCommunityIcons
+                        name={prayer.icon as any}
+                        size={24}
+                        color={statusColors.icon}
+                      />
+                      <Text
+                        style={[
+                          styles.prayerName,
+                          { color: statusColors.text },
+                        ]}
+                      >
+                        {t(`prayerTimes.prayers.${prayer.key}`)}
+                      </Text>
+                    </View>
+                    <Text
+                      style={[styles.prayerTime, { color: statusColors.time }]}
+                    >
+                      {formatTime(prayer.time, use24Hour)}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+
+            {/* Method Info */}
+            <View
+              style={[
+                styles.methodContainer,
+                { backgroundColor: colors.surface },
+              ]}
+            >
+              <Text style={[styles.methodText, { color: colors.textTertiary }]}>
+                {t("prayerTimes.methodInfo", {
+                  method: prayerTimes.method.name,
+                })}
+              </Text>
+            </View>
+          </>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    scrollContent: {
-        padding: 20,
-        paddingTop: 0,
-    },
-    errorContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-        borderRadius: 12,
-        marginBottom: 20,
-        borderWidth: 1,
-    },
-    errorText: {
-        marginLeft: 8,
-        fontSize: 14,
-        flex: 1,
-    },
-    headerCard: {
-        borderRadius: 16,
-        padding: 20,
-        marginBottom: 20,
-        shadowColor: '#4A5568',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-        elevation: 5,
-    },
-    dateContainer: {
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    gregorianDate: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 4,
-    },
-    hijriDate: {
-        fontSize: 14,
-    },
-    nextPrayerContainer: {
-        alignItems: 'center',
-        paddingTop: 16,
-        borderTopWidth: 1,
-    },
-    nextPrayerLabel: {
-        fontSize: 12,
-        textTransform: 'uppercase',
-        fontWeight: '600',
-        marginBottom: 4,
-    },
-    nextPrayerNameHeader: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 4,
-    },
-    nextPrayerTime: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 4,
-    },
-    timeRemaining: {
-        fontSize: 14,
-    },
-    prayerTimesContainer: {
-        marginBottom: 20,
-    },
-    // Regular prayer card styles
-    prayerCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-        marginBottom: 12,
-        borderRadius: 12,
-        shadowColor: '#4A5568',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 3,
-    },
-    prayerInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-    prayerName: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginLeft: 12,
-    },
-    prayerTime: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    // Next prayer special styles
-    nextPrayerWrapper: {
-        marginBottom: 18,
-        borderRadius: 20,
-        borderWidth: 3,
-        padding: 20,
-    },
-    nextPrayerContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    nextPrayerMain: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-    nextPrayerIconContainer: {
-        width: 70,
-        height: 70,
-        borderRadius: 35,
-        borderWidth: 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 18,
-    },
-    nextPrayerInfo: {
-        flex: 1,
-    },
-    nextPrayerLabelCard: {
-        fontSize: 13,
-        textTransform: 'uppercase',
-        fontWeight: '700',
-        marginBottom: 6,
-        opacity: 0.9,
-        letterSpacing: 0.5,
-    },
-    nextPrayerNameCard: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        letterSpacing: 0.5,
-    },
-    nextPrayerTimeContainer: {
-        alignItems: 'center',
-    },
-    nextPrayerTimeCard: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginBottom: 8,
-        letterSpacing: 1,
-    },
-    nextPrayerBadge: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 6,
-    },
-    methodContainer: {
-        borderRadius: 12,
-        padding: 16,
-        alignItems: 'center',
-        shadowColor: '#4A5568',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 3,
-    },
-    methodText: {
-        fontSize: 12,
-        textAlign: 'center',
-    },
-}); 
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 20,
+    paddingTop: 0,
+  },
+  errorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+  },
+  errorText: {
+    marginLeft: 8,
+    fontSize: 14,
+    flex: 1,
+  },
+  headerCard: {
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: "#4A5568",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  dateContainer: {
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  gregorianDate: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  hijriDate: {
+    fontSize: 14,
+  },
+  nextPrayerContainer: {
+    alignItems: "center",
+    paddingTop: 16,
+    borderTopWidth: 1,
+  },
+  nextPrayerLabel: {
+    fontSize: 12,
+    textTransform: "uppercase",
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  nextPrayerNameHeader: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  nextPrayerTime: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  timeRemaining: {
+    fontSize: 14,
+  },
+  prayerTimesContainer: {
+    marginBottom: 20,
+  },
+  // Regular prayer card styles
+  prayerCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 12,
+    shadowColor: "#4A5568",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  prayerInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  prayerName: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 12,
+  },
+  prayerTime: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  // Next prayer special styles (overflow hidden prevents Android elevation from overlapping content)
+  nextPrayerWrapper: {
+    marginBottom: 18,
+    borderRadius: 20,
+    borderWidth: 3,
+    padding: 20,
+    overflow: "hidden",
+  },
+  // Android: align with list cards for a cleaner, less "floating" look
+  nextPrayerWrapperAndroid: {
+    borderRadius: 12,
+    marginBottom: 12,
+    padding: 16,
+  },
+  nextPrayerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  nextPrayerMain: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  nextPrayerIconContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    borderWidth: 2,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 18,
+  },
+  nextPrayerIconContainerAndroid: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1.5,
+    marginRight: 12,
+  },
+  nextPrayerInfo: {
+    flex: 1,
+  },
+  nextPrayerLabelCard: {
+    fontSize: 13,
+    textTransform: "uppercase",
+    fontWeight: "700",
+    marginBottom: 6,
+    opacity: 0.9,
+    letterSpacing: 0.5,
+  },
+  nextPrayerLabelCardAndroid: {
+    fontSize: 11,
+    marginBottom: 2,
+  },
+  nextPrayerNameCard: {
+    fontSize: 22,
+    fontWeight: "bold",
+    letterSpacing: 0.5,
+  },
+  nextPrayerNameCardAndroid: {
+    fontSize: 18,
+  },
+  nextPrayerTimeContainer: {
+    alignItems: "center",
+  },
+  nextPrayerTimeCard: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 8,
+    letterSpacing: 1,
+  },
+  nextPrayerTimeCardAndroid: {
+    fontSize: 20,
+    marginBottom: 4,
+  },
+  nextPrayerBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  nextPrayerBadgeAndroid: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    elevation: 2,
+  },
+  methodContainer: {
+    borderRadius: 12,
+    padding: 16,
+    alignItems: "center",
+    shadowColor: "#4A5568",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  methodText: {
+    fontSize: 12,
+    textAlign: "center",
+  },
+});

@@ -2,6 +2,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export interface CalculationMethod {
   id: number;
+  key: string; // i18n key suffix, e.g. prayerTimes.calculationMethods.<key>.name
   name: string;
   description: string;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;

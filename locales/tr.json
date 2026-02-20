@@ -20,6 +20,28 @@
         "nextPrayer": "Sonraki Namaz",
         "remaining": "kaldı",
         "methodInfo": "Hesaplama Yöntemi: {{method}}",
+        "calculationMethods": {
+            "muslimWorldLeague": {
+                "name": "Dünya Müslüman Birliği",
+                "description": "Dünya Müslüman Birliği tarafından kabul edilen standart metot"
+            },
+            "isna": {
+                "name": "Kuzey Amerika İslam Cemiyeti",
+                "description": "Kuzey Amerika'da yaygın olarak kullanılan metot"
+            },
+            "turkey": {
+                "name": "Türkiye",
+                "description": "Türkiye'de kullanılan resmi metot"
+            },
+            "egyptian": {
+                "name": "Mısır Genel Fetva Kurulu",
+                "description": "Mısır Genel Fetva Kurulu tarafından kabul edilen metot"
+            },
+            "ummAlQura": {
+                "name": "Ümmü'l-Kura Üniversitesi",
+                "description": "Suudi Arabistan'da kullanılan resmi metot"
+            }
+        },
         "prayers": {
             "fajr": "İmsak",
             "sunrise": "Güneş",

@@ -2,10 +2,10 @@ import { useTheme } from "@/context/ThemeContext";
 import { useRef, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import {
-    BannerAd,
-    BannerAdSize,
-    TestIds,
-    useForeground,
+  BannerAd,
+  BannerAdSize,
+  TestIds,
+  useForeground,
 } from "react-native-google-mobile-ads";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 

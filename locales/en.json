@@ -20,6 +20,28 @@
         "nextPrayer": "Next Prayer",
         "remaining": "remaining",
         "methodInfo": "Calculation Method: {{method}}",
+        "calculationMethods": {
+            "muslimWorldLeague": {
+                "name": "Muslim World League",
+                "description": "Standard method adopted by the Muslim World League"
+            },
+            "isna": {
+                "name": "Islamic Society of North America",
+                "description": "Widely used in North America"
+            },
+            "turkey": {
+                "name": "Turkey",
+                "description": "Official method used in Turkey"
+            },
+            "egyptian": {
+                "name": "Egyptian General Authority",
+                "description": "Method adopted by the Egyptian General Authority of Survey"
+            },
+            "ummAlQura": {
+                "name": "Umm Al-Qura University",
+                "description": "Official method used in Saudi Arabia"
+            }
+        },
         "prayers": {
             "fajr": "Fajr",
             "sunrise": "Sunrise",
