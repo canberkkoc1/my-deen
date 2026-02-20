@@ -35,3 +35,16 @@ allprojects {
 
 apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"
+
+// Force all subprojects (autolinked libs) to use the same AGP so "No variants exist" is avoided on EAS Build
+subprojects { subproject ->
+  subproject.buildscript {
+    repositories {
+      google()
+      mavenCentral()
+    }
+    dependencies {
+      classpath('com.android.tools.build:gradle:8.8.2')
+    }
+  }
+}
