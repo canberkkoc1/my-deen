@@ -63,6 +63,7 @@
         {
           "androidAppId": "ca-app-pub-3782077697240059~6327635278",
           "iosAppId": "ca-app-pub-3782077697240059~6068378967",
+          "delayAppMeasurementInit": true,
           "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
           "skAdNetworkItems": [
             "cstr6suwn9.skadnetwork",
