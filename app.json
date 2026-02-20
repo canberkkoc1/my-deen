@@ -126,7 +126,8 @@
         }
       ],
       "expo-tracking-transparency",
-      "./plugins/withAgpVersion"
+      "./plugins/withAgpVersion",
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {
